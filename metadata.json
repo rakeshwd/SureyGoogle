@@ -1,0 +1,5 @@
+{
+  "name": "Copy of AI-Powered Behavioral Survey Platform",
+  "description": "An application for creating, administering, and analyzing behavioral surveys for job seekers. Admins can design questionnaires with AI assistance, and users can take surveys to receive a scored certificate. Results are available for admins to review and share with recruiters.",
+  "requestFramePermissions": []
+}
