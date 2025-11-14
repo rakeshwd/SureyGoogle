@@ -31,7 +31,8 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
   };
   
   const handleSubmit = () => {
-    const totalScore = Object.values(answers).reduce((sum, score) => sum + (score as number), 0);
+    // FIX: Use Number(score) for explicit type conversion from unknown, which is safer than `as number` assertion.
+    const totalScore = Object.values(answers).reduce((sum, score) => sum + Number(score), 0);
     const maxScore = questionnaire.questions.reduce((sum, q) => sum + Math.max(...q.options.map(opt => opt.score)), 0);
     
     const result: SurveyResult = {
@@ -40,7 +41,8 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
         userName: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
         questionnaireId: questionnaire.id,
         questionnaireTitle: questionnaire.title,
-        answers: Object.entries(answers).map(([questionId, score]) => ({ questionId, score: score as number })),
+        // FIX: Use Number(score) for explicit type conversion from unknown to number.
+        answers: Object.entries(answers).map(([questionId, score]) => ({ questionId, score: Number(score) })),
         totalScore,
         maxScore,
         completedAt: new Date().toISOString()
