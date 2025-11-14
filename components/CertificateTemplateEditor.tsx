@@ -121,6 +121,7 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
                             { key: 'showOverallScore', label: 'Show Overall Score' },
                             { key: 'showTraitScores', label: 'Show Trait Scores Breakdown' },
                             { key: 'showSignature', label: 'Show Signature' },
+                            { key: 'showWatermark', label: 'Show Watermark' },
                         ] as { key: keyof CertificateTemplate, label: string }[]).map(({ key, label }) => (
                             <div key={key} className="relative flex items-start">
                                 <div className="flex items-center h-5">
@@ -155,6 +156,19 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
                         onChange={handleTextChange}
                         className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                         placeholder="e.g., Congratulations on your achievement!"
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="watermarkText" className="block text-base font-medium text-slate-900 dark:text-white">Watermark Text</label>
+                    <input
+                        id="watermarkText"
+                        type="text"
+                        value={editedTemplate.watermarkText || ''}
+                        onChange={(e) => setEditedTemplate(prev => ({ ...prev, watermarkText: e.target.value }))}
+                        className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 disabled:opacity-50"
+                        placeholder="e.g., CONFIDENTIAL"
+                        disabled={!editedTemplate.showWatermark}
                     />
                 </div>
 

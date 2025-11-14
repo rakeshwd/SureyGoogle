@@ -101,3 +101,27 @@ export const BriefcaseIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) =>
     <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.075c0 1.313-.964 2.45-2.25 2.635-1.38.191-2.642-.9-2.642-2.275V14.15m0 0a2.25 2.25 0 0 0-2.25-2.25h-5.25a2.25 2.25 0 0 0-2.25 2.25m0 0v4.075c0 1.313.964 2.45 2.25 2.635 1.38.191 2.642-.9 2.642-2.275V14.15m8.563-3.682a2.25 2.25 0 0 0-2.25-2.25h-5.25a2.25 2.25 0 0 0-2.25 2.25m5.25 0v.01M12 3.75a2.25 2.25 0 0 0-2.25 2.25v3.375c0 .343.09.67.253.963h6.994c.163-.293.253-.62.253-.963V6a2.25 2.25 0 0 0-2.25-2.25H12Z" />
   </svg>
 );
+
+export const ScaleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5m-9-16.5v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5m-1.5-16.5v16.5M5.25 4.97A48.416 48.416 0 0 1 12 4.5c2.291 0 4.545.16 6.75.47m-13.5 0c-1.01.143-2.01.317-3 .52m3-.52v16.5" />
+  </svg>
+);
+
+export const SearchIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+  </svg>
+);
+
+export const XIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+  </svg>
+);
+
+export const UserGroupIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m-7.289 2.72a3 3 0 0 1-4.682-2.72 9.094 9.094 0 0 1 3.741-.479m7.289 2.72a8.966 8.966 0 0 1-7.289-2.72M12 12.75a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-7.5 4.525A9 9 0 0 1 12 12.75a9 9 0 0 1 7.5 4.525M12 12.75a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+  </svg>
+);

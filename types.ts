@@ -8,6 +8,8 @@ export interface User {
   role: 'admin' | 'user' | 'recruiter';
 }
 
+export const USER_ROLES: User['role'][] = ['admin', 'user', 'recruiter'];
+
 export interface Question {
   id: string;
   text: string;
@@ -42,6 +44,8 @@ export interface CertificateTemplate {
   customMessage: string;
   logoUrl: string | null;
   signatureUrl: string | null;
+  showWatermark: boolean;
+  watermarkText: string | null;
 }
 
 export interface AuditLog {

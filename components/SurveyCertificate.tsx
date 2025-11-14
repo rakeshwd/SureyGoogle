@@ -1,30 +1,31 @@
 import React, { useMemo } from 'react';
 import { SurveyResult, CertificateTemplate, Questionnaire } from '../types';
-import { LinkedInIcon, TwitterIcon, ImageIcon, SignatureIcon } from './icons';
-
-interface SurveyCertificateProps {
-  result: SurveyResult;
-  questionnaire: Questionnaire;
-  template: CertificateTemplate;
-}
+import { LinkedInIcon, TwitterIcon, ImageIcon, SignatureIcon, DownloadIcon } from './icons';
 
 const TraitScoreBar: React.FC<{ trait: string; score: number; maxScore: number }> = ({ trait, score, maxScore }) => {
     const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
     return (
         <div>
             <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{trait}</span>
-                <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{percentage}%</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">{trait}</span>
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{percentage}%</span>
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
                 <div 
-                    className="bg-indigo-600 h-2 rounded-full" 
+                    className="bg-teal-500 h-1.5 rounded-full" 
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
         </div>
     );
 };
+
+// Fix: Defined SurveyCertificateProps interface for the component props.
+interface SurveyCertificateProps {
+  result: SurveyResult;
+  questionnaire: Questionnaire;
+  template: CertificateTemplate;
+}
 
 const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionnaire, template }) => {
   const percentageScore = Math.round((result.totalScore / result.maxScore) * 100);
@@ -53,79 +54,116 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
   const handleShare = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+  
+  const handleDownload = () => {
+    window.print();
+  };
+
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col items-center">
-        <div className="w-full bg-white dark:bg-slate-800 rounded-lg shadow-2xl border-4 border-indigo-200 dark:border-indigo-900 p-8 sm:p-12 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/10 dark:to-purple-900/10 opacity-50 transform -skew-y-6"></div>
-            
-            <div className="relative z-10">
-                {template.showLogo && (
-                    <div className="mb-6 flex justify-center">
-                        {template.logoUrl ? (
-                            <img src={template.logoUrl} alt="Company Logo" className="h-16 w-auto" />
-                        ) : (
-                            <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
-                                <ImageIcon className="w-8 h-8 text-slate-500" />
-                            </div>
-                        )}
-                    </div>
-                )}
-                <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Certificate of Completion</h1>
-                <p className="mt-4 text-lg text-slate-500 dark:text-slate-400">This certifies that</p>
-                <p className="mt-2 text-2xl sm:text-3xl font-semibold text-indigo-600 dark:text-indigo-400">{result.userName}</p>
-                <p className="mt-4 text-lg text-slate-500 dark:text-slate-400">has successfully completed the</p>
-                <p className="mt-2 text-xl sm:text-2xl font-medium text-slate-800 dark:text-slate-100">{result.questionnaireTitle}</p>
-                
-                {template.showOverallScore && (
-                    <div className="mt-10">
-                        <p className="text-lg text-slate-500 dark:text-slate-400">Overall Score</p>
-                        <p className="text-5xl sm:text-6xl font-bold text-slate-900 dark:text-white mt-2">{percentageScore}%</p>
-                        <p className="text-md text-slate-500 dark:text-slate-400">({result.totalScore} out of {result.maxScore} points)</p>
-                    </div>
-                )}
+    <div className="max-w-5xl mx-auto flex flex-col items-center">
+        {/* Certificate Component */}
+        <div 
+            className="w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl flex font-serif relative overflow-hidden" 
+            style={{ fontFamily: "'Lato', sans-serif" }}
+        >
+            {/* Watermark */}
+            {template.showWatermark && template.watermarkText && (
+                <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                    <p 
+                        className="text-8xl font-black uppercase text-slate-200/50 dark:text-slate-700/50 transform -rotate-45 select-none"
+                        style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.1)' }}
+                    >
+                        {template.watermarkText}
+                    </p>
+                </div>
+            )}
 
-                {template.showTraitScores && (
-                    <div className="mt-10 text-left max-w-md mx-auto">
-                        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 text-center mb-4">Trait Breakdown</h3>
-                        <div className="space-y-4">
-                            {traitScores.map(([trait, scores]) => (
-                                <TraitScoreBar key={trait} trait={trait} score={scores.totalScore} maxScore={scores.maxScore} />
-                            ))}
+            {/* Decorative Side Panel */}
+            <div className="w-[340px] bg-slate-50 dark:bg-slate-900 p-8 flex flex-col justify-between relative z-10">
+                <div>
+                    {template.showLogo && (
+                        <div className="mb-6">
+                            {template.logoUrl ? (
+                                <img src={template.logoUrl} alt="Company Logo" className="h-40 w-auto" />
+                            ) : (
+                                <div className="w-40 h-40 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                    <ImageIcon className="w-20 h-20 text-slate-500" />
+                                </div>
+                            )}
                         </div>
-                    </div>
-                )}
-                
-                {template.customMessage && (
-                    <p className="mt-10 text-md text-slate-600 dark:text-slate-300 italic max-w-2xl mx-auto">"{template.customMessage}"</p>
-                )}
-
-                {template.showSignature && (
-                     <div className="mt-10">
-                        {template.signatureUrl ? (
-                            <img src={template.signatureUrl} alt="Signature" className="h-12 w-auto mx-auto" />
-                        ) : (
-                            <div className="flex flex-col items-center">
+                    )}
+                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200" style={{fontFamily: "'Playfair Display', serif"}}>Certificate of</h1>
+                    <h2 className="text-5xl font-bold text-teal-600 dark:text-teal-400" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
+                    {template.customMessage && (
+                        <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 italic">"{template.customMessage}"</p>
+                    )}
+                </div>
+                <div>
+                     {template.showSignature && (
+                         <div className="mt-10">
+                            {template.signatureUrl ? (
+                                <img src={template.signatureUrl} alt="Signature" className="h-12 w-auto" />
+                            ) : (
                                 <SignatureIcon className="h-12 w-24 text-slate-600 dark:text-slate-400" />
-                            </div>
-                        )}
-                        <div className="w-48 h-px bg-slate-400 dark:bg-slate-600 mx-auto mt-1"></div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Authorized Signature</p>
-                    </div>
-                )}
+                            )}
+                            <div className="w-48 h-px bg-slate-400 dark:bg-slate-600 mt-1"></div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Authorized Signature</p>
+                        </div>
+                    )}
+                    <p className="text-xs text-slate-400 mt-4">
+                        Issued on: {new Date(result.completedAt).toLocaleDateString()}
+                    </p>
+                </div>
+            </div>
 
-                <div className="mt-10 text-xs text-slate-400">
-                    <p>Completed on: {new Date(result.completedAt).toLocaleDateString()}</p>
-                    <p>Certificate ID: {result.id}</p>
+            {/* Main Content Panel */}
+            <div className="flex-1 p-12 flex flex-col justify-center relative z-10">
+                <p className="text-md uppercase tracking-widest text-slate-500 dark:text-slate-400">This certifies that</p>
+                <p className="mt-2 text-5xl font-bold text-slate-800 dark:text-slate-100" style={{fontFamily: "'Playfair Display', serif"}}>{result.userName}</p>
+                <p className="mt-4 text-md text-slate-500 dark:text-slate-400">has successfully completed the assessment for</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-700 dark:text-slate-200">{result.questionnaireTitle}</p>
+                
+                <div className="mt-10 w-full flex items-center space-x-12">
+                     {template.showOverallScore && (
+                        <div className="text-center">
+                            <p className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400">Overall Score</p>
+                            <p className="text-7xl font-bold text-slate-900 dark:text-white mt-1">{percentageScore}<span className="text-4xl">%</span></p>
+                        </div>
+                    )}
+                     {template.showTraitScores && (
+                        <div className="flex-1">
+                             <h3 className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Trait Breakdown</h3>
+                             <div className="space-y-3">
+                                {traitScores.map(([trait, scores]) => (
+                                    <TraitScoreBar key={trait} trait={trait} score={scores.totalScore} maxScore={scores.maxScore} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                 <p className="text-xs text-slate-400 mt-auto text-right">Certificate ID: {result.id}</p>
+            </div>
+            
+             {/* Decorative watermark/seal */}
+            <div className="absolute bottom-8 right-8 z-20">
+                <div className="w-24 h-24 border-2 border-amber-400 rounded-full flex items-center justify-center">
+                    <div className="w-20 h-20 border-2 border-amber-400 rounded-full text-center flex flex-col items-center justify-center">
+                        <span className="text-xs font-bold text-amber-500">BEHAVIORAL</span>
+                        <span className="text-xs font-bold text-amber-500">ASSESSMENT</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div className="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-md">
+
+        {/* Action Buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-lg no-print">
             <button
-                onClick={() => window.print()}
-                className="w-full px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75"
+                onClick={handleDownload}
+                className="w-full inline-flex justify-center items-center px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75"
             >
-                Download or Print
+                <DownloadIcon className="w-5 h-5 mr-2" />
+                Download as PDF
             </button>
             <div className="w-full flex items-center space-x-2">
                 <button onClick={() => handleShare(twitterShareUrl)} className="w-full flex justify-center items-center space-x-2 p-3 bg-[#1DA1F2] text-white font-semibold rounded-lg shadow-md hover:bg-[#0c85d0] focus:outline-none">

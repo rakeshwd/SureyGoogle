@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Questionnaire, SurveyResult, CertificateTemplate, AuditLog } from '../types';
-import { PencilIcon, PlusIcon, SendIcon, TrashIcon, SpinnerIcon, CheckCircleIcon, LogoutIcon, EnvelopeIcon, UploadIcon, DownloadIcon, ClockIcon } from './icons';
+import { Questionnaire, SurveyResult, CertificateTemplate, AuditLog, User, USER_ROLES } from '../types';
+import { PencilIcon, PlusIcon, SendIcon, TrashIcon, SpinnerIcon, CheckCircleIcon, LogoutIcon, EnvelopeIcon, UploadIcon, DownloadIcon, ClockIcon, UserGroupIcon } from './icons';
 import QuestionnaireEditor from './QuestionnaireEditor';
 import CertificateTemplateEditor from './CertificateTemplateEditor';
+import CandidateSearch from './CandidateSearch';
 
 interface AdminDashboardProps {
   questionnaires: Questionnaire[];
@@ -15,9 +16,13 @@ interface AdminDashboardProps {
   onSaveCertificateTemplate: (template: CertificateTemplate) => void;
   auditLogs: AuditLog[];
   onAddAuditLog: (action: string, details: string) => void;
+  allUsers: User[];
+  currentUser: User;
+  onUpdateUser: (user: User) => void;
+  onDeleteUser: (userId: string) => void;
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results, onSave, onDelete, onLogout, onShowNotification, certificateTemplate, onSaveCertificateTemplate, auditLogs, onAddAuditLog }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results, onSave, onDelete, onLogout, onShowNotification, certificateTemplate, onSaveCertificateTemplate, auditLogs, onAddAuditLog, allUsers, currentUser, onUpdateUser, onDeleteUser }) => {
   const [editingQuestionnaire, setEditingQuestionnaire] = useState<Questionnaire | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [showSendModal, setShowSendModal] = useState<SurveyResult | null>(null);
@@ -111,6 +116,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
           setRecruiterEmail('');
           setPaymentStatus('idle'); // Reset for next time
       }, 1500);
+    }
+  };
+
+  const handleRoleChange = (userId: string, newRole: User['role']) => {
+    const userToUpdate = allUsers.find(u => u.id === userId);
+    if (userToUpdate) {
+        onUpdateUser({ ...userToUpdate, role: newRole });
+    }
+  };
+
+  const handleDeleteClick = (userId: string) => {
+    if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+        onDeleteUser(userId);
     }
   };
 
@@ -259,52 +277,81 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
       {/* Results Section */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Submitted Results</h2>
+         <CandidateSearch
+          results={results}
+          questionnaires={questionnaires}
+          certificateTemplate={certificateTemplate}
+          renderActions={(result) => (
+             <div className="flex justify-end items-center space-x-2">
+                <button 
+                  onClick={() => handleNotifyUser(result)}
+                  className="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 text-xs font-medium rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  title="Notify user via email"
+                >
+                  <EnvelopeIcon className="w-4 h-4 mr-1.5" />
+                  Notify User
+                </button>
+                <button 
+                  onClick={() => setShowSendModal(result)}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <SendIcon className="w-4 h-4 mr-1.5" />
+                  Send to Recruiter
+                </button>
+             </div>
+          )}
+        />
+      </div>
+
+      {/* User Management Section */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4 flex items-center">
+          <UserGroupIcon className="w-6 h-6 mr-3 text-slate-500 dark:text-slate-400" />
+          User Management
+        </h2>
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">User</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Questionnaire</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Score</th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                      Actions
-                    </th>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Name</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Email</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Role</th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                {allUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{`${user.firstName} ${user.lastName}`}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{user.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user.id, e.target.value as User['role'])}
+                        disabled={user.id === currentUser.id}
+                        className="w-full px-2 py-1 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {USER_ROLES.map(role => (
+                          <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button 
+                        onClick={() => handleDeleteClick(user.id)}
+                        disabled={user.id === currentUser.id}
+                        className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                        title={user.id === currentUser.id ? "Cannot delete yourself" : "Delete user"}
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                  {results.map((r) => (
-                    <tr key={r.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{r.userName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{r.questionnaireTitle}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">{Math.round((r.totalScore / r.maxScore) * 100)}%</span>
-                        <span className="text-xs"> ({r.totalScore}/{r.maxScore})</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end items-center space-x-2">
-                           <button 
-                             onClick={() => handleNotifyUser(r)}
-                             className="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 text-xs font-medium rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                             title="Notify user via email"
-                           >
-                             <EnvelopeIcon className="w-4 h-4 mr-1.5" />
-                             Notify User
-                           </button>
-                           <button 
-                             onClick={() => setShowSendModal(r)}
-                             className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                           >
-                             <SendIcon className="w-4 h-4 mr-1.5" />
-                             Send to Recruiter
-                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       

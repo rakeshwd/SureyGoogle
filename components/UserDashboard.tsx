@@ -58,9 +58,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
     }
 
     return (
-        <div>
+        <div className="printable-area">
             <SurveyCertificate result={viewingCertificate} questionnaire={correspondingQuestionnaire} template={certificateTemplate} />
-            <div className="text-center mt-4">
+            <div className="text-center mt-4 no-print">
                 <button 
                     onClick={handleCloseCertificate}
                     className="px-6 py-2 text-sm font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700"

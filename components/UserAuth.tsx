@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User } from '../types';
 
 interface UserAuthProps {
-  onRegister: (user: User) => void;
+  onRegister: (user: Omit<User, 'id' | 'role'>) => void;
   onNavigateToLogin: () => void;
 }
 
@@ -29,12 +29,12 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
       return;
     }
     setError('');
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      ...formData,
-      role: 'user',
-    };
-    onRegister(newUser);
+    
+    const { password, ...rest } = formData;
+    
+    onRegister({
+      ...formData
+    });
   };
 
   return (

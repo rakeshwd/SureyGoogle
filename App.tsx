@@ -1,34 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Questionnaire, SurveyResult, User, CertificateTemplate, AuditLog } from './types';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { sampleQuestionnaires, sampleResults, sampleUsers } from './constants';
+import * as api from './services/api';
 import AdminDashboard from './components/AdminDashboard';
 import UserDashboard from './components/UserDashboard';
 import UserAuth from './components/UserAuth';
 import LoginPage from './components/LoginPage';
 import Notification from './components/Notification';
 import RecruiterDashboard from './components/RecruiterDashboard';
-
-const defaultCertificateTemplate: CertificateTemplate = {
-  showOverallScore: true,
-  showTraitScores: true,
-  showLogo: true,
-  showSignature: true,
-  customMessage: "Congratulations on your achievement! This certificate reflects your dedication and developing strengths.",
-  logoUrl: null,
-  signatureUrl: null,
-};
+import { ImageIcon } from './components/icons';
+import { SpinnerIcon } from './components/icons';
 
 
 const App: React.FC = () => {
-  const [questionnaires, setQuestionnaires] = useLocalStorage<Questionnaire[]>('questionnaires', sampleQuestionnaires);
-  const [results, setResults] = useLocalStorage<SurveyResult[]>('results', sampleResults);
-  const [allUsers, setAllUsers] = useLocalStorage<User[]>('allUsers', sampleUsers);
-  const [currentUser, setCurrentUser] = useLocalStorage<User | null>('currentUser', null);
+  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
+  const [results, setResults] = useState<SurveyResult[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [notification, setNotification] = useState<string | null>(null);
-  const [certificateTemplate, setCertificateTemplate] = useLocalStorage<CertificateTemplate>('certificateTemplate', defaultCertificateTemplate);
-  const [auditLogs, setAuditLogs] = useLocalStorage<AuditLog[]>('auditLogs', []);
+  const [certificateTemplate, setCertificateTemplate] = useState<CertificateTemplate | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  useEffect(() => {
+    const loadData = async () => {
+        setIsLoading(true);
+        const [
+            loadedUsers, 
+            loadedQuests, 
+            loadedResults, 
+            loadedTemplate, 
+            loadedLogs,
+            loadedCurrentUser
+        ] = await Promise.all([
+            api.fetchUsers(),
+            api.fetchQuestionnaires(),
+            api.fetchResults(),
+            api.fetchCertificateTemplate(),
+            api.fetchAuditLogs(),
+            api.getCurrentUser()
+        ]);
+        
+        setAllUsers(loadedUsers);
+        setQuestionnaires(loadedQuests);
+        setResults(loadedResults);
+        setCertificateTemplate(loadedTemplate);
+        setAuditLogs(loadedLogs);
+        setCurrentUser(loadedCurrentUser);
+        setIsLoading(false);
+    };
+    loadData();
+  }, []);
+
 
   const showNotification = (message: string) => {
     setNotification(message);
@@ -37,79 +61,114 @@ const App: React.FC = () => {
     }, 5000); // Notification disappears after 5 seconds
   };
   
-  const addAuditLog = (action: string, details: string) => {
+  const addAuditLog = async (action: string, details: string) => {
     if (currentUser && currentUser.role === 'admin') {
-        const newLog: AuditLog = {
-            id: `log-${Date.now()}`,
-            timestamp: new Date().toISOString(),
-            adminId: currentUser.id,
-            adminName: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
-            action,
-            details,
-        };
+        const newLog = await api.saveAuditLog(action, details, currentUser);
         setAuditLogs(prev => [newLog, ...prev]);
     }
   };
 
-  const handleSaveQuestionnaire = (quest: Questionnaire) => {
+  const handleSaveQuestionnaire = async (quest: Questionnaire) => {
     const isNew = !questionnaires.some(q => q.id === quest.id);
     const action = isNew ? "Created Questionnaire" : "Updated Questionnaire";
     
+    const savedQuest = await api.saveQuestionnaire(quest);
+    
     setQuestionnaires(prev => {
-      const index = prev.findIndex(q => q.id === quest.id);
+      const index = prev.findIndex(q => q.id === savedQuest.id);
       if (index > -1) {
         const newQuests = [...prev];
-        newQuests[index] = quest;
+        newQuests[index] = savedQuest;
         return newQuests;
       }
-      return [...prev, quest];
+      return [...prev, savedQuest];
     });
-    addAuditLog(action, `Title: "${quest.title}"`);
+    addAuditLog(action, `Title: "${savedQuest.title}"`);
   };
 
-  const handleDeleteQuestionnaire = (id: string) => {
+  const handleDeleteQuestionnaire = async (id: string) => {
     const deletedQuest = questionnaires.find(q => q.id === id);
+    await api.deleteQuestionnaire(id);
     setQuestionnaires(prev => prev.filter(q => q.id !== id));
     if (deletedQuest) {
         addAuditLog("Deleted Questionnaire", `Title: "${deletedQuest.title}"`);
     }
   };
 
-  const handleSurveyComplete = (result: SurveyResult) => {
-    setResults(prev => [...prev, result]);
+  const handleSurveyComplete = async (result: SurveyResult) => {
+    const newResult = await api.saveResult(result);
+    setResults(prev => [...prev, newResult]);
   };
   
-  const handleSaveCertificateTemplate = (template: CertificateTemplate) => {
-    setCertificateTemplate(template);
+  const handleSaveCertificateTemplate = async (template: CertificateTemplate) => {
+    const savedTemplate = await api.saveCertificateTemplate(template);
+    setCertificateTemplate(savedTemplate);
     addAuditLog("Updated Certificate Template", "Admin updated the certificate appearance and content.");
     showNotification("Certificate template saved successfully!");
   };
 
-  const handleLogin = (email: string, password: string): boolean => {
-    const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (user && user.password === password) {
+  const handleLogin = async (email: string, password: string): Promise<boolean> => {
+    const user = await api.login(email, password);
+    if (user) {
       setCurrentUser(user);
       return true;
     }
     return false;
   };
 
-  const handleRegister = (user: User) => {
-    if (allUsers.some(u => u.email.toLowerCase() === user.email.toLowerCase())) {
+  const handleRegister = async (user: Omit<User, 'id' | 'role'>) => {
+    const existingUser = await api.findUserByEmail(user.email);
+     if (existingUser) {
         alert("An account with this email already exists. Please log in.");
         setAuthView('login');
         return;
     }
-    setAllUsers(prev => [...prev, user]);
-    setCurrentUser(user);
+    const newUser = await api.registerUser(user);
+    setAllUsers(prev => [...prev, newUser]);
+    setCurrentUser(newUser);
   };
   
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await api.logout();
     setCurrentUser(null);
     setAuthView('login');
   };
 
+  const handleUpdateUser = async (user: User) => {
+    const updatedUser = await api.updateUser(user);
+    setAllUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    addAuditLog("Updated User Role", `Set role for "${updatedUser.email}" to "${updatedUser.role}"`);
+    showNotification(`Successfully updated role for ${updatedUser.email}.`);
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    const userToDelete = allUsers.find(u => u.id === userId);
+    if (!userToDelete) return;
+    
+    await api.deleteUser(userId);
+    setAllUsers(prev => prev.filter(u => u.id !== userId));
+    addAuditLog("Deleted User", `Deleted user account: "${userToDelete.email}"`);
+    showNotification(`Successfully deleted user ${userToDelete.email}.`);
+  };
+  
+  const renderLoading = () => (
+    <div className="flex justify-center items-center h-screen">
+      <div className="text-center">
+        <SpinnerIcon className="h-12 w-12 text-indigo-600 mx-auto" />
+        <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">Loading Application Data...</p>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
+    if (isLoading || !certificateTemplate) {
+        return (
+            <div className="flex justify-center items-center pt-20">
+                <SpinnerIcon className="h-10 w-10 text-indigo-600" />
+            </div>
+        );
+    }
+
     if (currentUser) {
       if (currentUser.role === 'admin') {
         return (
@@ -124,6 +183,10 @@ const App: React.FC = () => {
             onSaveCertificateTemplate={handleSaveCertificateTemplate}
             auditLogs={auditLogs}
             onAddAuditLog={addAuditLog}
+            allUsers={allUsers}
+            currentUser={currentUser}
+            onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
           />
         );
       }
@@ -134,6 +197,7 @@ const App: React.FC = () => {
                 questionnaires={questionnaires}
                 results={results}
                 onLogout={handleLogout}
+                certificateTemplate={certificateTemplate}
             />
         );
       }
@@ -164,9 +228,22 @@ const App: React.FC = () => {
       <header className="bg-white dark:bg-slate-800 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
-              Behavioral Survey Platform
-            </h1>
+            <div className="flex items-center space-x-4">
+                {certificateTemplate?.showLogo && (
+                    <>
+                        {certificateTemplate.logoUrl ? (
+                            <img src={certificateTemplate.logoUrl} alt="Platform Logo" className="h-10 w-auto" />
+                        ) : (
+                            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-md flex items-center justify-center">
+                                <ImageIcon className="w-6 h-6 text-slate-500" />
+                            </div>
+                        )}
+                    </>
+                )}
+                <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
+                    USCORE
+                </h1>
+            </div>
           </div>
         </div>
       </header>
