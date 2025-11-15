@@ -123,7 +123,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
               value={editedQuestionnaire.title}
               onChange={handleTitleChange}
               placeholder="Questionnaire Title"
-              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
               required
             />
           </div>
@@ -138,7 +138,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 value={q.text}
                                 onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
                                 placeholder="Question Text"
-                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                 rows={2}
                                 required
                             />
@@ -146,7 +146,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 <select
                                     value={q.trait}
                                     onChange={(e) => updateQuestion(qIndex, { trait: e.target.value })}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                 >
                                 {behavioralTraits.map(trait => (
                                     <option key={trait} value={trait}>{trait}</option>
@@ -157,7 +157,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                     value={q.behavior || ''}
                                     onChange={(e) => updateQuestion(qIndex, { behavior: e.target.value })}
                                     placeholder="Specific Behavior (optional)"
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                 />
                             </div>
                             <div className="pt-2">
@@ -187,7 +187,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                         </div>
                                     ))}
                                 </div>
-                                <button type="button" onClick={() => addOption(qIndex)} className="mt-2 text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                                <button type="button" onClick={() => addOption(qIndex)} className="mt-2 text-sm text-orange-500 hover:text-orange-400 font-medium">
                                     + Add Option
                                 </button>
                             </div>
@@ -212,7 +212,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                         type="button"
                         onClick={handleGenerateQuestions}
                         disabled={isGenerating}
-                        className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                     <SparklesIcon className="w-5 h-5 mr-2" />
                     {isGenerating ? 'Generating...' : 'Generate with AI'}
@@ -231,7 +231,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
             </button>
             <button
               type="submit"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-md shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               Save Questionnaire
             </button>

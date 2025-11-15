@@ -12,7 +12,7 @@ const TraitScoreBar: React.FC<{ trait: string; score: number; maxScore: number }
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
                 <div 
-                    className="bg-teal-500 h-1.5 rounded-full" 
+                    className="bg-orange-500 h-1.5 rounded-full" 
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
@@ -94,7 +94,7 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
                         </div>
                     )}
                     <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200" style={{fontFamily: "'Playfair Display', serif"}}>Certificate of</h1>
-                    <h2 className="text-5xl font-bold text-teal-600 dark:text-teal-400" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
+                    <h2 className="text-5xl font-bold text-orange-500 dark:text-orange-400" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
                     {template.customMessage && (
                         <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 italic">"{template.customMessage}"</p>
                     )}
@@ -160,7 +160,7 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
         <div className="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-lg no-print">
             <button
                 onClick={handleDownload}
-                className="w-full inline-flex justify-center items-center px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75"
+                className="w-full inline-flex justify-center items-center px-8 py-3 bg-blue-800 text-white font-semibold rounded-lg shadow-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
             >
                 <DownloadIcon className="w-5 h-5 mr-2" />
                 Download as PDF

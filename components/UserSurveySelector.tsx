@@ -41,7 +41,7 @@ const UserSurveySelector: React.FC<UserSurveySelectorProps> = ({ questionnaires,
             </div>
             <button
               onClick={() => handleStartSurvey(q)}
-              className="px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               Start Survey
             </button>

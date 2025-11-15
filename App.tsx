@@ -154,7 +154,7 @@ const App: React.FC = () => {
   const renderLoading = () => (
     <div className="flex justify-center items-center h-screen">
       <div className="text-center">
-        <SpinnerIcon className="h-12 w-12 text-indigo-600 mx-auto" />
+        <SpinnerIcon className="h-12 w-12 text-orange-500 mx-auto" />
         <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">Loading Application Data...</p>
       </div>
     </div>
@@ -164,7 +164,7 @@ const App: React.FC = () => {
     if (isLoading || !certificateTemplate) {
         return (
             <div className="flex justify-center items-center pt-20">
-                <SpinnerIcon className="h-10 w-10 text-indigo-600" />
+                <SpinnerIcon className="h-10 w-10 text-orange-500" />
             </div>
         );
     }
@@ -227,22 +227,19 @@ const App: React.FC = () => {
       {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
       <header className="bg-white dark:bg-slate-800 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
+          <div className="flex justify-between items-center py-3">
+            <div className="flex items-center">
                 {certificateTemplate?.showLogo && (
                     <>
                         {certificateTemplate.logoUrl ? (
-                            <img src={certificateTemplate.logoUrl} alt="Platform Logo" className="h-10 w-auto" />
+                            <img src={certificateTemplate.logoUrl} alt="Platform Logo" className="h-12 w-auto" />
                         ) : (
-                            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-md flex items-center justify-center">
-                                <ImageIcon className="w-6 h-6 text-slate-500" />
+                            <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-md flex items-center justify-center">
+                                <ImageIcon className="w-7 h-7 text-slate-500" />
                             </div>
                         )}
                     </>
                 )}
-                <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
-                    USCORE
-                </h1>
             </div>
           </div>
         </div>

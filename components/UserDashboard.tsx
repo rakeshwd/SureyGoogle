@@ -96,7 +96,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
               </div>
               <button
                 onClick={() => handleStartSurvey(q)}
-                className="px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
               >
                 Start Survey
               </button>
@@ -114,12 +114,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
                        <div>
                          <h4 className="text-lg font-semibold">{r.questionnaireTitle}</h4>
                          <p className="text-sm text-slate-500 dark:text-slate-400">Completed on {new Date(r.completedAt).toLocaleDateString()}</p>
-                         <p className="mt-4 text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                         <p className="mt-4 text-2xl font-bold text-orange-500 dark:text-orange-400">
                             {Math.round((r.totalScore / r.maxScore) * 100)}%
                          </p>
                        </div>
                        <div className="mt-4 flex justify-end">
-                            <button onClick={() => setViewingCertificate(r)} className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                            <button onClick={() => setViewingCertificate(r)} className="text-sm font-medium text-orange-500 hover:text-orange-400">
                                 View Certificate
                             </button>
                        </div>

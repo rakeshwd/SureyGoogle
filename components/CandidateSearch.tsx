@@ -64,7 +64,7 @@ const CandidateSearch: React.FC<CandidateSearchProps> = ({ results, questionnair
               placeholder="Search by candidate name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
             />
           </div>
         </div>
@@ -90,7 +90,7 @@ const CandidateSearch: React.FC<CandidateSearchProps> = ({ results, questionnair
                     <div className="flex items-center justify-end space-x-4">
                         <button
                           onClick={() => handleViewCertificate(r)}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
+                          className="text-orange-500 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 font-medium"
                         >
                           View Certificate
                         </button>

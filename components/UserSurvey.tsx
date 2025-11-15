@@ -31,7 +31,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
   };
   
   const handleSubmit = () => {
-    // FIX: Use Number(score) for explicit type conversion from unknown, which is safer than `as number` assertion.
+    // FIX: Explicitly cast score to a number as it is inferred as `unknown`.
     const totalScore = Object.values(answers).reduce((sum, score) => sum + Number(score), 0);
     const maxScore = questionnaire.questions.reduce((sum, q) => sum + Math.max(...q.options.map(opt => opt.score)), 0);
     
@@ -41,7 +41,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
         userName: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
         questionnaireId: questionnaire.id,
         questionnaireTitle: questionnaire.title,
-        // FIX: Use Number(score) for explicit type conversion from unknown to number.
+        // FIX: Explicitly cast score to a number to match the SurveyResult type.
         answers: Object.entries(answers).map(([questionId, score]) => ({ questionId, score: Number(score) })),
         totalScore,
         maxScore,
@@ -54,10 +54,10 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 sm:p-10 transition-all duration-300">
         <div className="mb-6">
-            <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">Question {currentQuestionIndex + 1} of {totalQuestions}</p>
+            <p className="text-sm font-semibold text-orange-500 dark:text-orange-400">Question {currentQuestionIndex + 1} of {totalQuestions}</p>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
                 <div 
-                    className="bg-indigo-600 h-2 rounded-full transition-all duration-500" 
+                    className="bg-orange-500 h-2 rounded-full transition-all duration-500" 
                     style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
                 ></div>
             </div>
@@ -71,8 +71,8 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
                     key={index} 
                     className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
                         answers[currentQuestion.id] === option.score 
-                        ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500 dark:bg-indigo-900/50 dark:border-indigo-400'
-                        : 'border-slate-300 hover:border-indigo-400 dark:border-slate-600 dark:hover:border-indigo-500'
+                        ? 'bg-orange-50 border-orange-500 ring-2 ring-orange-500 dark:bg-orange-900/50 dark:border-orange-400'
+                        : 'border-slate-300 hover:border-orange-400 dark:border-slate-600 dark:hover:border-orange-500'
                     }`}
                 >
                     <input 
@@ -81,7 +81,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
                         value={option.score}
                         checked={answers[currentQuestion.id] === option.score}
                         onChange={() => handleAnswerSelect(option.score)}
-                        className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:bg-slate-700 dark:border-slate-500"
+                        className="h-5 w-5 text-orange-500 focus:ring-orange-500 border-slate-300 dark:bg-slate-700 dark:border-slate-500"
                     />
                     <span className="ml-4 text-md text-slate-700 dark:text-slate-300">{option.text}</span>
                 </label>
@@ -100,7 +100,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
                 <button 
                     onClick={goToNext}
                     disabled={!answers[currentQuestion.id]}
-                    className="px-6 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed"
+                    className="px-6 py-2 text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-orange-300 disabled:cursor-not-allowed"
                 >
                     Next
                 </button>

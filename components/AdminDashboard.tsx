@@ -136,7 +136,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
     if (paymentStatus === 'processing') {
         return (
             <div className="flex flex-col items-center justify-center h-48">
-                <SpinnerIcon className="h-12 w-12 text-indigo-600"/>
+                <SpinnerIcon className="h-12 w-12 text-orange-500"/>
                 <p className="mt-4 text-slate-600 dark:text-slate-400">Processing payment...</p>
             </div>
         );
@@ -164,20 +164,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                 value={recruiterEmail}
                 onChange={(e) => setRecruiterEmail(e.target.value)}
                 placeholder="recruiter@example.com"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                 required
               />
               <div className="flex justify-end space-x-3">
                  <button
                   type="button"
                   onClick={() => setShowSendModal(null)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-slate-600 dark:text-slate-200 dark:border-slate-500 dark:hover:bg-slate-500"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:bg-slate-600 dark:text-slate-200 dark:border-slate-500 dark:hover:bg-slate-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-md shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                   <SendIcon className="h-4 w-4 mr-2" />
                   Pay and Send ($5)
@@ -244,7 +244,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
             </button>
             <button
               onClick={handleCreateNew}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               <PlusIcon className="w-5 h-5 mr-2" />
               Create New
@@ -262,7 +262,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                 <button onClick={() => handleExport(q)} className="p-2 text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-colors" title="Export">
                   <DownloadIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleEdit(q)} className="p-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Edit">
+                <button onClick={() => handleEdit(q)} className="p-2 text-slate-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors" title="Edit">
                   <PencilIcon className="w-5 h-5" />
                 </button>
                 <button onClick={() => onDelete(q.id)} className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete">
@@ -285,7 +285,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
              <div className="flex justify-end items-center space-x-2">
                 <button 
                   onClick={() => handleNotifyUser(result)}
-                  className="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 text-xs font-medium rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 text-xs font-medium rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                   title="Notify user via email"
                 >
                   <EnvelopeIcon className="w-4 h-4 mr-1.5" />
@@ -293,7 +293,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                 </button>
                 <button 
                   onClick={() => setShowSendModal(result)}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                   <SendIcon className="w-4 h-4 mr-1.5" />
                   Send to Recruiter
@@ -330,7 +330,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                         value={user.role}
                         onChange={(e) => handleRoleChange(user.id, e.target.value as User['role'])}
                         disabled={user.id === currentUser.id}
-                        className="w-full px-2 py-1 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-2 py-1 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {USER_ROLES.map(role => (
                           <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</option>
