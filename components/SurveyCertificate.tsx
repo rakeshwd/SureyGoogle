@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 import { SurveyResult, CertificateTemplate, Questionnaire } from '../types';
 import { LinkedInIcon, TwitterIcon, ImageIcon, SignatureIcon, DownloadIcon } from './icons';
 
-const TraitScoreBar: React.FC<{ trait: string; score: number; maxScore: number }> = ({ trait, score, maxScore }) => {
-    const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+const TraitScoreBar: React.FC<{ trait: string; percentage: number }> = ({ trait, percentage }) => {
     return (
         <div>
             <div className="flex justify-between items-center mb-1">
@@ -32,18 +31,30 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
   
   const traitScores = useMemo(() => {
     const scoresByTrait: Record<string, { totalScore: number; maxScore: number }> = {};
+    
+    // Aggregate total and max possible scores for each trait from the questionnaire
     questionnaire.questions.forEach(q => {
         if (!scoresByTrait[q.trait]) {
             scoresByTrait[q.trait] = { totalScore: 0, maxScore: 0 };
         }
+        
         const answer = result.answers.find(a => a.questionId === q.id);
-        const questionMaxScore = Math.max(...q.options.map(o => o.score));
+        // Use Math.max with 0 to handle cases with no options or all-zero scores safely
+        const questionMaxScore = Math.max(0, ...q.options.map(o => o.score));
+        
         if (answer) {
             scoresByTrait[q.trait].totalScore += answer.score;
         }
         scoresByTrait[q.trait].maxScore += questionMaxScore;
     });
-    return Object.entries(scoresByTrait);
+    
+    // Calculate the percentage for each trait and return a clean data structure
+    return Object.entries(scoresByTrait).map(([trait, scores]) => {
+        const percentage = scores.maxScore > 0 
+            ? Math.round((scores.totalScore / scores.maxScore) * 100) 
+            : 0;
+        return { trait, percentage };
+    });
   }, [result, questionnaire]);
   
   const appUrl = window.location.href;
@@ -135,8 +146,8 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
                         <div className="flex-1">
                              <h3 className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Trait Breakdown</h3>
                              <div className="space-y-3">
-                                {traitScores.map(([trait, scores]) => (
-                                    <TraitScoreBar key={trait} trait={trait} score={scores.totalScore} maxScore={scores.maxScore} />
+                                {traitScores.map(({ trait, percentage }) => (
+                                    <TraitScoreBar key={trait} trait={trait} percentage={percentage} />
                                 ))}
                             </div>
                         </div>

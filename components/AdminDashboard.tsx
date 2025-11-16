@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Questionnaire, SurveyResult, CertificateTemplate, AuditLog, User, USER_ROLES } from '../types';
-import { PencilIcon, PlusIcon, SendIcon, TrashIcon, SpinnerIcon, CheckCircleIcon, LogoutIcon, EnvelopeIcon, UploadIcon, DownloadIcon, ClockIcon, UserGroupIcon } from './icons';
+import { PencilIcon, PlusIcon, SendIcon, TrashIcon, SpinnerIcon, CheckCircleIcon, EnvelopeIcon, UploadIcon, DownloadIcon, ClockIcon, UserGroupIcon } from './icons';
 import QuestionnaireEditor from './QuestionnaireEditor';
 import CertificateTemplateEditor from './CertificateTemplateEditor';
 import CandidateSearch from './CandidateSearch';
@@ -10,7 +10,6 @@ interface AdminDashboardProps {
   results: SurveyResult[];
   onSave: (questionnaire: Questionnaire) => void;
   onDelete: (id: string) => void;
-  onLogout: () => void;
   onShowNotification: (message: string) => void;
   certificateTemplate: CertificateTemplate;
   onSaveCertificateTemplate: (template: CertificateTemplate) => void;
@@ -22,7 +21,7 @@ interface AdminDashboardProps {
   onDeleteUser: (userId: string) => void;
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results, onSave, onDelete, onLogout, onShowNotification, certificateTemplate, onSaveCertificateTemplate, auditLogs, onAddAuditLog, allUsers, currentUser, onUpdateUser, onDeleteUser }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results, onSave, onDelete, onShowNotification, certificateTemplate, onSaveCertificateTemplate, auditLogs, onAddAuditLog, allUsers, currentUser, onUpdateUser, onDeleteUser }) => {
   const [editingQuestionnaire, setEditingQuestionnaire] = useState<Questionnaire | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [showSendModal, setShowSendModal] = useState<SurveyResult | null>(null);
@@ -209,12 +208,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
         </div>
       )}
 
-      <div className="flex justify-between items-center">
+      <div>
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h2>
-        <button onClick={onLogout} className="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600">
-            <LogoutIcon className="h-5 w-5" />
-            <span>Logout</span>
-        </button>
       </div>
 
       {/* Certificate Template Section */}

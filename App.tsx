@@ -7,7 +7,7 @@ import UserAuth from './components/UserAuth';
 import LoginPage from './components/LoginPage';
 import Notification from './components/Notification';
 import RecruiterDashboard from './components/RecruiterDashboard';
-import { ImageIcon } from './components/icons';
+import { ImageIcon, LogoutIcon } from './components/icons';
 import { SpinnerIcon } from './components/icons';
 
 
@@ -177,7 +177,6 @@ const App: React.FC = () => {
             results={results}
             onSave={handleSaveQuestionnaire}
             onDelete={handleDeleteQuestionnaire}
-            onLogout={handleLogout}
             onShowNotification={showNotification}
             certificateTemplate={certificateTemplate}
             onSaveCertificateTemplate={handleSaveCertificateTemplate}
@@ -196,7 +195,6 @@ const App: React.FC = () => {
             <RecruiterDashboard
                 questionnaires={questionnaires}
                 results={results}
-                onLogout={handleLogout}
                 certificateTemplate={certificateTemplate}
             />
         );
@@ -208,7 +206,6 @@ const App: React.FC = () => {
           questionnaires={questionnaires}
           results={results.filter(r => r.userId === currentUser.id)}
           onSurveyComplete={handleSurveyComplete}
-          onLogout={handleLogout}
           onShowNotification={showNotification}
           certificateTemplate={certificateTemplate}
         />
@@ -225,22 +222,31 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen font-sans">
       {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
-      <header className="bg-white dark:bg-slate-800 shadow-md">
+      <header className="bg-white dark:bg-slate-800 shadow-md no-print">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
                 {certificateTemplate?.showLogo && (
                     <>
                         {certificateTemplate.logoUrl ? (
-                            <img src={certificateTemplate.logoUrl} alt="Platform Logo" className="h-12 w-auto" />
+                            <img src={certificateTemplate.logoUrl} alt="USCORE Logo" className="h-10 w-auto" />
                         ) : (
-                            <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-md flex items-center justify-center">
-                                <ImageIcon className="w-7 h-7 text-slate-500" />
+                            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-md flex items-center justify-center">
+                                <ImageIcon className="w-6 h-6 text-slate-500" />
                             </div>
                         )}
                     </>
                 )}
+                <span className="text-2xl font-bold text-slate-800 dark:text-slate-200" style={{fontFamily: "'Playfair Display', serif"}}>
+                    USCORE
+                </span>
             </div>
+            {currentUser && (
+                 <button onClick={handleLogout} className="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600">
+                    <LogoutIcon className="h-5 w-5" />
+                    <span>Logout</span>
+                </button>
+            )}
           </div>
         </div>
       </header>
