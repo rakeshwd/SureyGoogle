@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Questionnaire, SurveyResult, User, CertificateTemplate } from '../types';
 import UserSurvey from './UserSurvey';
 import SurveyCertificate from './SurveyCertificate';
-import { LogoutIcon } from './icons';
+import { BriefcaseIcon, CheckCircleIcon } from './icons';
 
 interface UserDashboardProps {
   currentUser: User;
@@ -52,7 +52,6 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
   if (viewingCertificate) {
     const correspondingQuestionnaire = questionnaires.find(q => q.id === viewingCertificate.questionnaireId);
     if (!correspondingQuestionnaire) {
-        // Handle case where questionnaire is not found, though this shouldn't happen in normal flow
         return <div>Error: Could not load certificate details. <button onClick={handleCloseCertificate}>Back</button></div>
     }
 
@@ -72,47 +71,51 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <div>
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Welcome, {currentUser.firstName}!</h2>
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white" style={{fontFamily: "'Playfair Display', serif"}}>Welcome, {currentUser.firstName}!</h2>
         <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">Ready to discover your strengths?</p>
       </div>
 
       <div>
-        <h3 className="text-2xl font-semibold mb-4">Available Surveys</h3>
-        <div className="space-y-4">
+        <h3 className="text-2xl font-semibold mb-6">Available Surveys</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {questionnaires.map((q) => (
-            <div key={q.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 flex items-center justify-between">
-              <div>
-                <h4 className="text-xl font-semibold">{q.title}</h4>
-                <p className="text-slate-500 dark:text-slate-400">{q.questions.length} questions</p>
+            <div key={q.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 flex flex-col justify-between transition-transform hover:scale-105 duration-300">
+              <div className="flex-grow">
+                 <BriefcaseIcon className="h-8 w-8 text-orange-500 mb-3" />
+                 <h4 className="text-lg font-bold text-slate-900 dark:text-white">{q.title}</h4>
+                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{q.questions.length} questions</p>
               </div>
-              <button
-                onClick={() => handleStartSurvey(q)}
-                className="px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-              >
-                Start Survey
-              </button>
+              <div className="mt-6">
+                <button
+                  onClick={() => handleStartSurvey(q)}
+                  className="w-full px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                >
+                  Start Survey
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
       
       <div>
-        <h3 className="text-2xl font-semibold mb-4">My Certificates</h3>
+        <h3 className="text-2xl font-semibold mb-6">My Certificates</h3>
         {results.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {results.map(r => (
-                    <div key={r.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col justify-between">
-                       <div>
-                         <h4 className="text-lg font-semibold">{r.questionnaireTitle}</h4>
-                         <p className="text-sm text-slate-500 dark:text-slate-400">Completed on {new Date(r.completedAt).toLocaleDateString()}</p>
-                         <p className="mt-4 text-2xl font-bold text-orange-500 dark:text-orange-400">
+                    <div key={r.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 flex flex-col justify-between transition-transform hover:scale-105 duration-300 group">
+                       <div className="flex-grow">
+                         <CheckCircleIcon className="h-8 w-8 text-green-500 mb-3" />
+                         <h4 className="text-lg font-bold text-slate-900 dark:text-white">{r.questionnaireTitle}</h4>
+                         <p className="text-sm text-slate-500 dark:text-slate-400">Completed: {new Date(r.completedAt).toLocaleDateString()}</p>
+                         <p className="mt-4 text-4xl font-bold text-orange-500 dark:text-orange-400">
                             {Math.round((r.totalScore / r.maxScore) * 100)}%
                          </p>
                        </div>
-                       <div className="mt-4 flex justify-end">
-                            <button onClick={() => setViewingCertificate(r)} className="text-sm font-medium text-orange-500 hover:text-orange-400">
+                       <div className="mt-6">
+                            <button onClick={() => setViewingCertificate(r)} className="w-full text-center text-sm font-semibold text-orange-500 hover:text-orange-400 group-hover:underline">
                                 View Certificate
                             </button>
                        </div>
@@ -120,8 +123,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
                 ))}
             </div>
         ) : (
-            <div className="text-center py-8 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                <p className="text-slate-500 dark:text-slate-400">You haven't completed any surveys yet. Start one above to get your first certificate!</p>
+            <div className="text-center py-12 px-6 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+                <p className="text-slate-600 dark:text-slate-400">You haven't completed any surveys yet.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">Start one above to get your first certificate!</p>
             </div>
         )}
       </div>

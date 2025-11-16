@@ -1,5 +1,6 @@
 import { Questionnaire, SurveyResult, User, CertificateTemplate, AuditLog } from '../types';
 import { sampleQuestionnaires, sampleResults, sampleUsers } from '../constants';
+// FIX: Corrected import to pull from the consolidated defaults file.
 import { defaultLogo, defaultSignature } from '../assets/defaults';
 
 // --- Helper Functions ---

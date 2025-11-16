@@ -1,19 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Questionnaire, SurveyResult, CertificateTemplate } from '../types';
-import { BriefcaseIcon, ScaleIcon } from './icons';
+import { BriefcaseIcon, ScaleIcon, SearchIcon, XIcon } from './icons';
 import CandidateComparison from './CandidateComparison';
-import CandidateSearch from './CandidateSearch';
-
-interface RecruiterDashboardProps {
-  questionnaires: Questionnaire[];
-  results: SurveyResult[];
-  certificateTemplate: CertificateTemplate;
-}
+import SurveyCertificate from './SurveyCertificate';
 
 const TraitAnalysisBar: React.FC<{ trait: string; averageScore: number }> = ({ trait, averageScore }) => {
     const percentage = Math.round(averageScore);
     return (
-        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
             <div className="flex justify-between items-center mb-1">
                 <span className="text-md font-medium text-slate-800 dark:text-slate-200">{trait}</span>
                 <span className="text-md font-semibold text-orange-500 dark:text-orange-400">{percentage}%</span>
@@ -28,54 +22,81 @@ const TraitAnalysisBar: React.FC<{ trait: string; averageScore: number }> = ({ t
     );
 };
 
+// FIX: Defined the RecruiterDashboardProps interface.
+interface RecruiterDashboardProps {
+    questionnaires: Questionnaire[];
+    results: SurveyResult[];
+    certificateTemplate: CertificateTemplate;
+}
 
 const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires, results, certificateTemplate }) => {
     const [selectedQuestionnaireId, setSelectedQuestionnaireId] = useState<string>('all');
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedResultIds, setSelectedResultIds] = useState<Set<string>>(new Set());
     const [isComparisonModalOpen, setIsComparisonModalOpen] = useState(false);
-    
+    const [viewingCertificate, setViewingCertificate] = useState<SurveyResult | null>(null);
+
+    const certificateModalRef = useRef<HTMLDivElement>(null);
+    const [certificateScale, setCertificateScale] = useState(1);
+
+    useEffect(() => {
+        const calculateScale = () => {
+            if (viewingCertificate && certificateModalRef.current) {
+                const container = certificateModalRef.current;
+                // Subtract padding from the container width
+                const padding = 32; // Corresponds to p-4, assuming 1rem = 16px
+                const containerWidth = container.offsetWidth - padding * 2;
+                const contentWidth = 1024; // Certificate's native width
+                
+                if (containerWidth < contentWidth) {
+                    setCertificateScale(containerWidth / contentWidth);
+                } else {
+                    setCertificateScale(1);
+                }
+            }
+        };
+
+        calculateScale();
+        window.addEventListener('resize', calculateScale);
+        return () => window.removeEventListener('resize', calculateScale);
+    }, [viewingCertificate]);
+
+
     const traitAnalysis = useMemo(() => {
         const relevantResults = selectedQuestionnaireId === 'all' 
             ? results 
             : results.filter(r => r.questionnaireId === selectedQuestionnaireId);
-
         if (relevantResults.length === 0) return [];
-
         const traitStats: Record<string, { totalScore: number; maxScore: number }> = {};
-
         for (const result of relevantResults) {
             const questionnaire = questionnaires.find(q => q.id === result.questionnaireId);
             if (!questionnaire) continue;
-
             for (const answer of result.answers) {
                 const question = questionnaire.questions.find(q => q.id === answer.questionId);
                 if (!question) continue;
-
                 const trait = question.trait;
-                if (!traitStats[trait]) {
-                    traitStats[trait] = { totalScore: 0, maxScore: 0 };
-                }
-
+                if (!traitStats[trait]) traitStats[trait] = { totalScore: 0, maxScore: 0 };
                 traitStats[trait].totalScore += answer.score;
                 traitStats[trait].maxScore += Math.max(...question.options.map(o => o.score));
             }
         }
-        
         return Object.entries(traitStats).map(([trait, data]) => ({
             trait,
             averageScore: data.maxScore > 0 ? (data.totalScore / data.maxScore) * 100 : 0
         })).sort((a, b) => b.averageScore - a.averageScore);
-
     }, [selectedQuestionnaireId, results, questionnaires]);
+
+    const filteredResults = useMemo(() => {
+        return results.filter(result =>
+            result.userName.toLowerCase().includes(searchTerm.toLowerCase())
+        ).sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+    }, [results, searchTerm]);
 
     const handleSelectResult = (resultId: string) => {
         setSelectedResultIds(prev => {
             const newSet = new Set(prev);
-            if (newSet.has(resultId)) {
-                newSet.delete(resultId);
-            } else {
-                newSet.add(resultId);
-            }
+            if (newSet.has(resultId)) newSet.delete(resultId);
+            else newSet.add(resultId);
             return newSet;
         });
     };
@@ -87,24 +108,36 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
         }
         const firstQuestionnaireId = selected[0].questionnaireId;
         const allSameQuestionnaire = selected.every(r => r.questionnaireId === firstQuestionnaireId);
-
         if (!allSameQuestionnaire) {
             return { selectedResults: selected, comparisonQuestionnaire: null, isComparisonValid: false };
         }
-        
         const questionnaire = questionnaires.find(q => q.id === firstQuestionnaireId);
         return { selectedResults: selected, comparisonQuestionnaire: questionnaire || null, isComparisonValid: !!questionnaire };
     }, [selectedResultIds, results, questionnaires]);
 
+    const correspondingQuestionnaire = viewingCertificate ? questionnaires.find(q => q.id === viewingCertificate.questionnaireId) : null;
 
     return (
         <div className="space-y-8">
             {isComparisonModalOpen && isComparisonValid && comparisonQuestionnaire && (
-                <CandidateComparison
-                    results={selectedResults}
-                    questionnaire={comparisonQuestionnaire}
-                    onClose={() => setIsComparisonModalOpen(false)}
-                />
+                <CandidateComparison results={selectedResults} questionnaire={comparisonQuestionnaire} onClose={() => setIsComparisonModalOpen(false)} />
+            )}
+
+            {viewingCertificate && correspondingQuestionnaire && (
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4" ref={certificateModalRef}>
+                    <div className="bg-transparent rounded-lg relative w-full h-full max-w-5xl max-h-full flex items-center justify-center">
+                        <button
+                            onClick={() => setViewingCertificate(null)}
+                            className="absolute top-0 right-0 m-2 bg-white dark:bg-slate-700 rounded-full p-2 text-slate-600 dark:text-slate-300 hover:text-red-500 z-20 no-print"
+                            aria-label="Close certificate view"
+                        >
+                            <XIcon className="w-6 h-6" />
+                        </button>
+                         <div style={{ transform: `scale(${certificateScale})`, transformOrigin: 'center center', width: '1024px', height: '722px' }}>
+                            <SurveyCertificate result={viewingCertificate} questionnaire={correspondingQuestionnaire} template={certificateTemplate} />
+                        </div>
+                    </div>
+                </div>
             )}
 
             <div className="flex justify-between items-center">
@@ -115,7 +148,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
             </div>
 
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <h3 className="text-2xl font-bold">Candidate Trait Analysis</h3>
                     <div className="w-full sm:w-64">
                         <label htmlFor="questionnaire-filter" className="sr-only">Filter by questionnaire</label>
@@ -126,41 +159,22 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                         >
                             <option value="all">All Questionnaires</option>
-                            {questionnaires.map(q => (
-                                <option key={q.id} value={q.id}>{q.title}</option>
-                            ))}
+                            {questionnaires.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
                         </select>
                     </div>
                 </div>
-
                 {traitAnalysis.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {traitAnalysis.map(({ trait, averageScore }) => (
-                            <TraitAnalysisBar key={trait} trait={trait} averageScore={averageScore} />
-                        ))}
+                        {traitAnalysis.map(({ trait, averageScore }) => <TraitAnalysisBar key={trait} trait={trait} averageScore={averageScore} />)}
                     </div>
                 ) : (
-                    <div className="text-center py-12 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                        <p className="text-slate-500 dark:text-slate-400">No survey results available for this selection.</p>
-                        <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Complete some surveys to see the analysis.</p>
-                    </div>
+                    <div className="text-center py-12 px-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg"><p className="text-slate-500 dark:text-slate-400">No survey results available for this selection.</p></div>
                 )}
             </div>
-
-            {/* Candidate Search */}
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Candidate Search</h2>
-              <CandidateSearch
-                results={results}
-                questionnaires={questionnaires}
-                certificateTemplate={certificateTemplate}
-              />
-            </div>
             
-             {/* All Candidate Results for Comparison */}
-            <div>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                    <h2 className="text-2xl font-bold">All Candidate Results</h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <h3 className="text-2xl font-bold">Candidate Hub</h3>
                     <button
                         onClick={() => setIsComparisonModalOpen(true)}
                         disabled={!isComparisonValid}
@@ -171,45 +185,41 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                         Compare Selected ({selectedResultIds.size})
                     </button>
                 </div>
-                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                        <thead className="bg-slate-50 dark:bg-slate-700">
-                          <tr>
-                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                                Select
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">User</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Questionnaire</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Score</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">Completed At</th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                          {results.map((r) => (
-                            <tr key={r.id} className={selectedResultIds.has(r.id) ? 'bg-orange-50 dark:bg-orange-900/20' : ''}>
-                              <td className="px-6 py-4 whitespace-nowrap text-center">
-                                 <input
-                                    type="checkbox"
-                                    checked={selectedResultIds.has(r.id)}
-                                    onChange={() => handleSelectResult(r.id)}
-                                    className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 rounded dark:bg-slate-900 dark:border-slate-600"
-                                />
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{r.userName}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{r.questionnaireTitle}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                <span className="font-semibold text-slate-800 dark:text-slate-200">{Math.round((r.totalScore / r.maxScore) * 100)}%</span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                {new Date(r.completedAt).toLocaleDateString()}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                <div className="relative mb-6">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <SearchIcon className="h-5 w-5 text-slate-400" />
                     </div>
+                    <input
+                        type="text" placeholder="Search by candidate name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
+                    />
                 </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredResults.map(result => (
+                        <div key={result.id} className={`rounded-lg p-4 transition-all duration-200 cursor-pointer ${selectedResultIds.has(result.id) ? 'bg-orange-50 dark:bg-orange-900/30 ring-2 ring-orange-500' : 'bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+                            <div className="flex items-start justify-between">
+                                <div className="flex-grow" onClick={() => setViewingCertificate(result)}>
+                                    <h4 className="font-bold text-slate-900 dark:text-white">{result.userName}</h4>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">{result.questionnaireTitle}</p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedResultIds.has(result.id)}
+                                    onChange={() => handleSelectResult(result.id)}
+                                    className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 rounded dark:bg-slate-900 dark:border-slate-600 ml-2"
+                                />
+                            </div>
+                             <div className="mt-4" onClick={() => setViewingCertificate(result)}>
+                                 <p className="text-sm text-slate-600 dark:text-slate-300">Score: <span className="font-bold text-xl text-orange-500">{Math.round((result.totalScore / result.maxScore) * 100)}%</span></p>
+                                 <p className="text-xs text-slate-400 mt-1">Completed: {new Date(result.completedAt).toLocaleDateString()}</p>
+                             </div>
+                        </div>
+                    ))}
+                </div>
+                {filteredResults.length === 0 && (
+                    <div className="text-center py-12 text-sm text-slate-500 dark:text-slate-400">No results found for "{searchTerm}".</div>
+                )}
             </div>
         </div>
     );

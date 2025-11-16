@@ -65,5 +65,8 @@ export const behavioralTraits = [
   "Communication",
   "Work Ethic",
   "Creativity",
-  "Attention to Detail"
+  "Attention to Detail",
+  "Honesty",
+  "Reliability",
+  "Initiative"
 ];

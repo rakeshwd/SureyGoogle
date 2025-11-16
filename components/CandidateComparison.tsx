@@ -43,7 +43,7 @@ const RadarChart: React.FC<{
         const labelRadius = radius * 1.15;
         const x = center + labelRadius * Math.cos(angle);
         const y = center + labelRadius * Math.sin(angle);
-        // Fix: Explicitly type `textAnchor` to satisfy the SVG text element's prop type.
+        // FIX: Explicitly type `textAnchor` to satisfy the SVG text element's prop type.
         let textAnchor: "middle" | "end" | "start" = "middle";
         if (x < center - 10) textAnchor = "end";
         if (x > center + 10) textAnchor = "start";
