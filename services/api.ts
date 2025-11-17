@@ -127,15 +127,26 @@ export const registerUser = async (userData: Omit<User, 'id' | 'role'>): Promise
     return newUser;
 };
 
-export const login = async (email: string, password: string): Promise<User | null> => {
+export type LoginResult = {
+  user?: User;
+  error?: 'not_found' | 'incorrect_password';
+};
+
+export const login = async (email: string, password: string): Promise<LoginResult> => {
     await simulateNetwork();
     const users = getFromStorage<User[]>('allUsers', []);
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-    if (user) {
-        saveToStorage('currentUser', user);
-        return user;
+    const userByEmail = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if (!userByEmail) {
+        return { error: 'not_found' };
     }
-    return null;
+
+    if (userByEmail.password !== password) {
+        return { error: 'incorrect_password' };
+    }
+    
+    saveToStorage('currentUser', userByEmail);
+    return { user: userByEmail };
 };
 
 export const logout = async (): Promise<void> => {

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
 interface LoginPageProps {
-  // FIX: Update onLogin to return a Promise<boolean> to support async login operations.
-  onLogin: (email: string, password: string) => Promise<boolean>;
+  onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   onNavigateToRegister: () => void;
 }
 
@@ -11,13 +10,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToRegister }) 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // FIX: Make handleSubmit async to await the result of the onLogin function.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const success = await onLogin(email, password);
-    if (!success) {
-      setError('Invalid email or password.');
+    const result = await onLogin(email, password);
+    if (!result.success && result.error) {
+      setError(result.error);
     }
   };
 

@@ -107,13 +107,21 @@ const App: React.FC = () => {
     showNotification("Certificate template saved successfully!");
   };
 
-  const handleLogin = async (email: string, password: string): Promise<boolean> => {
-    const user = await api.login(email, password);
-    if (user) {
-      setCurrentUser(user);
-      return true;
+  const handleLogin = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    const result = await api.login(email, password);
+    if (result.user) {
+      setCurrentUser(result.user);
+      return { success: true };
     }
-    return false;
+    
+    let errorMessage = 'An unknown error occurred.';
+    if (result.error === 'not_found') {
+      errorMessage = 'Account not found. Please check your email or register.';
+    } else if (result.error === 'incorrect_password') {
+      errorMessage = 'Incorrect password. Please try again.';
+    }
+    
+    return { success: false, error: errorMessage };
   };
 
   const handleRegister = async (user: Omit<User, 'id' | 'role'>) => {
