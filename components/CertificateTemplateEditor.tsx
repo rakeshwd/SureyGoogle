@@ -99,7 +99,7 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
                             Change
                         </button>
                         {url && (
-                             <button type="button" onClick={() => handleRemoveImage(type)} className="p-2 text-slate-500 hover:text-red-600">
+                             <button type="button" onClick={() => handleRemoveImage(type)} className="p-2 text-slate-500 hover:text-red-600" title={`Remove ${label}`}>
                                 <TrashIcon className="w-4 h-4" />
                             </button>
                         )}

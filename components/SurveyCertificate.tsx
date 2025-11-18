@@ -171,17 +171,18 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
         <div className="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-lg no-print">
             <button
                 onClick={handleDownload}
+                title="Download a printable PDF of your certificate"
                 className="w-full inline-flex justify-center items-center px-8 py-3 bg-blue-800 text-white font-semibold rounded-lg shadow-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
             >
                 <DownloadIcon className="w-5 h-5 mr-2" />
                 Download as PDF
             </button>
             <div className="w-full flex items-center space-x-2">
-                <button onClick={() => handleShare(twitterShareUrl)} className="w-full flex justify-center items-center space-x-2 p-3 bg-[#1DA1F2] text-white font-semibold rounded-lg shadow-md hover:bg-[#0c85d0] focus:outline-none">
+                <button onClick={() => handleShare(twitterShareUrl)} title="Share your achievement on Twitter" className="w-full flex justify-center items-center space-x-2 p-3 bg-[#1DA1F2] text-white font-semibold rounded-lg shadow-md hover:bg-[#0c85d0] focus:outline-none">
                     <TwitterIcon className="h-5 w-5"/>
                     <span>Share</span>
                 </button>
-                <button onClick={() => handleShare(linkedInShareUrl)} className="w-full flex justify-center items-center space-x-2 p-3 bg-[#0077B5] text-white font-semibold rounded-lg shadow-md hover:bg-[#005582] focus:outline-none">
+                <button onClick={() => handleShare(linkedInShareUrl)} title="Share your achievement on LinkedIn" className="w-full flex justify-center items-center space-x-2 p-3 bg-[#0077B5] text-white font-semibold rounded-lg shadow-md hover:bg-[#005582] focus:outline-none">
                     <LinkedInIcon className="h-5 w-5"/>
                     <span>Share</span>
                 </button>

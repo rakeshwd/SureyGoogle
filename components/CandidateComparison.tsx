@@ -108,7 +108,7 @@ const CandidateComparison: React.FC<CandidateComparisonProps> = ({ results, ques
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
                 <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
                     <h2 className="text-xl font-bold">Candidate Comparison: <span className="text-orange-500 dark:text-orange-400">{questionnaire.title}</span></h2>
-                    <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-full">
+                    <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-full" title="Close comparison view">
                         <XIcon className="w-6 h-6" />
                     </button>
                 </div>

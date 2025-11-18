@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Questionnaire, SurveyResult, User, CertificateTemplate, AuditLog } from './types';
+import { Questionnaire, SurveyResult, User, CertificateTemplate, AuditLog, AppSettings } from './types';
 import * as api from './services/api';
 import AdminDashboard from './components/AdminDashboard';
 import UserDashboard from './components/UserDashboard';
@@ -9,47 +9,63 @@ import Notification from './components/Notification';
 import RecruiterDashboard from './components/RecruiterDashboard';
 import { ImageIcon, LogoutIcon } from './components/icons';
 import { SpinnerIcon } from './components/icons';
+import ForgotPasswordPage from './components/ForgotPasswordPage';
+import ResetPasswordPage from './components/ResetPasswordPage';
 
+
+type AuthView = 'login' | 'register' | 'forgotPassword' | 'resetPassword';
 
 const App: React.FC = () => {
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
   const [results, setResults] = useState<SurveyResult[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [authView, setAuthView] = useState<'login' | 'register'>('login');
+  const [authView, setAuthView] = useState<AuthView>('login');
   const [notification, setNotification] = useState<string | null>(null);
   const [certificateTemplate, setCertificateTemplate] = useState<CertificateTemplate | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
+  const [resetToken, setResetToken] = useState<string | null>(null);
 
+
+  const loadData = async () => {
+    setIsLoading(true);
+    const [
+        loadedSettings,
+        loadedUsers, 
+        loadedQuests, 
+        loadedResults, 
+        loadedTemplate, 
+        loadedLogs,
+        loadedCurrentUser
+    ] = await Promise.all([
+        api.fetchAppSettings(),
+        api.fetchUsers(),
+        api.fetchQuestionnaires(),
+        api.fetchResults(),
+        api.fetchCertificateTemplate(),
+        api.fetchAuditLogs(),
+        api.getCurrentUser()
+    ]);
+    
+    setAppSettings(loadedSettings);
+    setAllUsers(loadedUsers);
+    setQuestionnaires(loadedQuests);
+    setResults(loadedResults);
+    setCertificateTemplate(loadedTemplate);
+    setAuditLogs(loadedLogs);
+    setCurrentUser(loadedCurrentUser);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-        setIsLoading(true);
-        const [
-            loadedUsers, 
-            loadedQuests, 
-            loadedResults, 
-            loadedTemplate, 
-            loadedLogs,
-            loadedCurrentUser
-        ] = await Promise.all([
-            api.fetchUsers(),
-            api.fetchQuestionnaires(),
-            api.fetchResults(),
-            api.fetchCertificateTemplate(),
-            api.fetchAuditLogs(),
-            api.getCurrentUser()
-        ]);
-        
-        setAllUsers(loadedUsers);
-        setQuestionnaires(loadedQuests);
-        setResults(loadedResults);
-        setCertificateTemplate(loadedTemplate);
-        setAuditLogs(loadedLogs);
-        setCurrentUser(loadedCurrentUser);
-        setIsLoading(false);
-    };
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('resetToken');
+    if (token) {
+        setResetToken(token);
+        setAuthView('resetPassword');
+    }
     loadData();
   }, []);
 
@@ -158,6 +174,21 @@ const App: React.FC = () => {
     addAuditLog("Deleted User", `Deleted user account: "${userToDelete.email}"`);
     showNotification(`Successfully deleted user ${userToDelete.email}.`);
   };
+
+  const handleSaveAppSettings = async (settings: AppSettings) => {
+    await api.saveAppSettings(settings);
+    setAppSettings(settings);
+    showNotification("Data source changed. Reloading application data...");
+    // Reload all data to reflect the new source
+    await loadData();
+  };
+
+  const handleDeleteAllData = async () => {
+    await api.deleteAllData();
+    showNotification("All application data has been reset to defaults.");
+    // Reloading will log out the admin, which is the correct behavior
+    await loadData();
+  };
   
   const renderLoading = () => (
     <div className="flex justify-center items-center h-screen">
@@ -169,7 +200,7 @@ const App: React.FC = () => {
   );
 
   const renderContent = () => {
-    if (isLoading || !certificateTemplate) {
+    if (isLoading || !certificateTemplate || !appSettings) {
         return (
             <div className="flex justify-center items-center pt-20">
                 <SpinnerIcon className="h-10 w-10 text-orange-500" />
@@ -194,6 +225,9 @@ const App: React.FC = () => {
             currentUser={currentUser}
             onUpdateUser={handleUpdateUser}
             onDeleteUser={handleDeleteUser}
+            appSettings={appSettings}
+            onSaveAppSettings={handleSaveAppSettings}
+            onDeleteAllData={handleDeleteAllData}
           />
         );
       }
@@ -221,7 +255,35 @@ const App: React.FC = () => {
     }
     
     if (authView === 'login') {
-        return <LoginPage onLogin={handleLogin} onNavigateToRegister={() => setAuthView('register')} />
+        return <LoginPage 
+          onLogin={handleLogin} 
+          onNavigateToRegister={() => setAuthView('register')}
+          onNavigateToForgotPassword={() => setAuthView('forgotPassword')} 
+        />
+    }
+
+    if (authView === 'forgotPassword') {
+        return <ForgotPasswordPage onNavigateToLogin={() => setAuthView('login')} />;
+    }
+
+    if (authView === 'resetPassword' && resetToken) {
+        return <ResetPasswordPage 
+            token={resetToken} 
+            onResetSuccess={() => {
+                showNotification("Password reset successfully. Please log in.");
+                setAuthView('login');
+                setResetToken(null);
+                // Clean up URL
+                window.history.pushState({}, document.title, window.location.pathname);
+            }} 
+            onInvalidToken={() => {
+                showNotification("Invalid or expired password reset link.");
+                setAuthView('login');
+                setResetToken(null);
+                 // Clean up URL
+                window.history.pushState({}, document.title, window.location.pathname);
+            }}
+        />
     }
     
     return <UserAuth onRegister={handleRegister} onNavigateToLogin={() => setAuthView('login')} />
@@ -250,7 +312,7 @@ const App: React.FC = () => {
                 </span>
             </div>
             {currentUser && (
-                 <button onClick={handleLogout} className="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600">
+                 <button onClick={handleLogout} title="Logout" className="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600">
                     <LogoutIcon className="h-5 w-5" />
                     <span>Logout</span>
                 </button>

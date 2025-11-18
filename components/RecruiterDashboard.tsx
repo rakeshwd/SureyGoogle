@@ -130,6 +130,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                             onClick={() => setViewingCertificate(null)}
                             className="absolute top-0 right-0 m-2 bg-white dark:bg-slate-700 rounded-full p-2 text-slate-600 dark:text-slate-300 hover:text-red-500 z-20 no-print"
                             aria-label="Close certificate view"
+                            title="Close certificate view"
                         >
                             <XIcon className="w-6 h-6" />
                         </button>
@@ -179,7 +180,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                         onClick={() => setIsComparisonModalOpen(true)}
                         disabled={!isComparisonValid}
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-orange-300 disabled:cursor-not-allowed"
-                        title={!isComparisonValid && selectedResults.length > 1 ? "Please select results from the same questionnaire." : undefined}
+                        title={!isComparisonValid && selectedResults.length > 1 ? "Please select results from the same questionnaire." : "Compare scores of selected candidates side-by-side"}
                     >
                         <ScaleIcon className="w-5 h-5 mr-2" />
                         Compare Selected ({selectedResultIds.size})

@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Questionnaire, SurveyResult, CertificateTemplate, AuditLog, User, USER_ROLES } from '../types';
+import { Questionnaire, SurveyResult, CertificateTemplate, AuditLog, User, USER_ROLES, AppSettings, DataSource } from '../types';
 import { PencilIcon, PlusIcon, SendIcon, TrashIcon, SpinnerIcon, CheckCircleIcon, EnvelopeIcon, UploadIcon, DownloadIcon, ClockIcon, UserGroupIcon } from './icons';
 import QuestionnaireEditor from './QuestionnaireEditor';
 import CertificateTemplateEditor from './CertificateTemplateEditor';
 import CandidateSearch from './CandidateSearch';
+import ConfirmationModal from './ConfirmationModal';
 
 interface AdminDashboardProps {
   questionnaires: Questionnaire[];
@@ -19,15 +20,29 @@ interface AdminDashboardProps {
   currentUser: User;
   onUpdateUser: (user: User) => void;
   onDeleteUser: (userId: string) => void;
+  appSettings: AppSettings;
+  onSaveAppSettings: (settings: AppSettings) => void;
+  onDeleteAllData: () => Promise<void>;
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results, onSave, onDelete, onShowNotification, certificateTemplate, onSaveCertificateTemplate, auditLogs, onAddAuditLog, allUsers, currentUser, onUpdateUser, onDeleteUser }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
+  questionnaires, results, onSave, onDelete, onShowNotification, 
+  certificateTemplate, onSaveCertificateTemplate, auditLogs, onAddAuditLog, 
+  allUsers, currentUser, onUpdateUser, onDeleteUser,
+  appSettings, onSaveAppSettings, onDeleteAllData
+}) => {
   const [editingQuestionnaire, setEditingQuestionnaire] = useState<Questionnaire | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [showSendModal, setShowSendModal] = useState<SurveyResult | null>(null);
   const [recruiterEmail, setRecruiterEmail] = useState('');
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success'>('idle');
   const importInputRef = useRef<HTMLInputElement>(null);
+
+  // State for confirmation modal
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState<(() => void) | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [confirmationTitle, setConfirmationTitle] = useState('');
 
   const handleCreateNew = () => {
     setEditingQuestionnaire(null);
@@ -125,10 +140,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
     }
   };
 
-  const handleDeleteClick = (userId: string) => {
-    if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
-        onDeleteUser(userId);
-    }
+  const handleDeleteUserClick = (userId: string) => {
+    const userToDelete = allUsers.find(u => u.id === userId);
+    if (!userToDelete) return;
+
+    setConfirmationTitle('Delete User');
+    setConfirmationMessage(`Are you sure you want to delete the user "${userToDelete.email}"? This action cannot be undone.`);
+    setConfirmationAction(() => () => onDeleteUser(userId));
+    setShowConfirmation(true);
+  };
+  
+  const handleDeleteQuestionnaireClick = (questionnaireId: string) => {
+    const questToDelete = questionnaires.find(q => q.id === questionnaireId);
+    if (!questToDelete) return;
+    setConfirmationTitle('Delete Questionnaire');
+    setConfirmationMessage(`Are you sure you want to delete "${questToDelete.title}"? This action cannot be undone.`);
+    setConfirmationAction(() => () => onDelete(questionnaireId));
+    setShowConfirmation(true);
+  };
+
+  const handleDataSourceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSource = e.target.value as DataSource;
+    onSaveAppSettings({ ...appSettings, dataSource: newSource });
+  };
+
+  const handleDeleteAllDataClick = () => {
+    setConfirmationTitle('Delete All Application Data');
+    setConfirmationMessage('Are you sure you want to delete all data? This action is irreversible and will reset all questionnaires, results, users, and settings to their default state.');
+    setConfirmationAction(() => async () => {
+      await onDeleteAllData();
+    });
+    setShowConfirmation(true);
   };
 
   const renderModalContent = () => {
@@ -176,6 +218,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                 </button>
                 <button
                   type="submit"
+                  title="Proceed to payment to send result to a recruiter"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-md shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                   <SendIcon className="h-4 w-4 mr-2" />
@@ -208,18 +251,90 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
         </div>
       )}
 
+      <ConfirmationModal
+        isOpen={showConfirmation}
+        title={confirmationTitle}
+        message={confirmationMessage}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={() => {
+          if (confirmationAction) {
+            confirmationAction();
+          }
+          setShowConfirmation(false);
+        }}
+      />
+
       <div>
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h2>
       </div>
 
-      {/* Certificate Template Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Certificate Template</h2>
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
-            <CertificateTemplateEditor
-                template={certificateTemplate}
-                onSave={onSaveCertificateTemplate}
-            />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Certificate Template Section */}
+        <div className="lg:col-span-2">
+            <h2 className="text-2xl font-bold mb-4">Certificate Template</h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
+                <CertificateTemplateEditor
+                    template={certificateTemplate}
+                    onSave={onSaveCertificateTemplate}
+                />
+            </div>
+        </div>
+
+        {/* Application Settings */}
+        <div>
+            <h2 className="text-2xl font-bold mb-4">Application Settings</h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
+              <fieldset>
+                <legend className="text-base font-medium text-slate-900 dark:text-white">Data Source</legend>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Control where the application reads and writes data.
+                </p>
+                <div className="mt-4 space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      id="browser"
+                      name="data-source"
+                      type="radio"
+                      value="browser"
+                      checked={appSettings.dataSource === 'browser'}
+                      onChange={handleDataSourceChange}
+                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
+                    />
+                    <label htmlFor="browser" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Browser Storage <span className="text-xs text-slate-500">(Persistent)</span>
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      id="database"
+                      name="data-source"
+                      type="radio"
+                      value="database"
+                      checked={appSettings.dataSource === 'database'}
+                      onChange={handleDataSourceChange}
+                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
+                    />
+                    <label htmlFor="database" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Database <span className="text-xs text-slate-500">(Simulated, resets on refresh)</span>
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                <h3 className="text-base font-medium text-slate-900 dark:text-white">Danger Zone</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    This action is irreversible and will reset the application to its default state.
+                </p>
+                <div className="mt-4">
+                    <button
+                      onClick={handleDeleteAllDataClick}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      Delete All Data
+                    </button>
+                </div>
+              </div>
+            </div>
         </div>
       </div>
 
@@ -232,6 +347,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
             <input type="file" ref={importInputRef} onChange={handleImport} accept=".json" className="hidden" />
             <button
               onClick={handleImportClick}
+              title="Import a questionnaire from a JSON file"
               className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 text-sm font-medium rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600"
             >
               <UploadIcon className="w-5 h-5 mr-2" />
@@ -239,6 +355,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
             </button>
             <button
               onClick={handleCreateNew}
+              title="Create a new questionnaire from scratch"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               <PlusIcon className="w-5 h-5 mr-2" />
@@ -254,13 +371,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{q.questions.length} questions</p>
               </div>
               <div className="mt-6 flex justify-end space-x-3">
-                <button onClick={() => handleExport(q)} className="p-2 text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-colors" title="Export">
+                <button onClick={() => handleExport(q)} className="p-2 text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-colors" title="Export Questionnaire as JSON">
                   <DownloadIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleEdit(q)} className="p-2 text-slate-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors" title="Edit">
+                <button onClick={() => handleEdit(q)} className="p-2 text-slate-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors" title="Edit Questionnaire">
                   <PencilIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => onDelete(q.id)} className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete">
+                <button onClick={() => handleDeleteQuestionnaireClick(q.id)} className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete Questionnaire">
                   <TrashIcon className="w-5 h-5" />
                 </button>
               </div>
@@ -288,6 +405,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                 </button>
                 <button 
                   onClick={() => setShowSendModal(result)}
+                  title="Proceed to payment to send result to a recruiter"
                   className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                   <SendIcon className="w-4 h-4 mr-1.5" />
@@ -334,10 +452,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ questionnaires, results
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button 
-                        onClick={() => handleDeleteClick(user.id)}
+                        onClick={() => handleDeleteUserClick(user.id)}
                         disabled={user.id === currentUser.id}
                         className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
-                        title={user.id === currentUser.id ? "Cannot delete yourself" : "Delete user"}
+                        title={user.id === currentUser.id ? "Cannot delete yourself" : "Delete User Account"}
                       >
                         <TrashIcon className="w-5 h-5" />
                       </button>

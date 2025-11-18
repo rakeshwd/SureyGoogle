@@ -6,6 +6,8 @@ export interface User {
   email: string;
   password: string;
   role: 'admin' | 'user' | 'recruiter';
+  passwordResetToken?: string | null;
+  passwordResetExpires?: string | null;
 }
 
 export const USER_ROLES: User['role'][] = ['admin', 'user', 'recruiter'];
@@ -70,3 +72,9 @@ export const behavioralTraits = [
   "Reliability",
   "Initiative"
 ];
+
+export type DataSource = 'browser' | 'database';
+
+export interface AppSettings {
+  dataSource: DataSource;
+}

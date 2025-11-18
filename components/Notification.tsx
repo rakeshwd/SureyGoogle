@@ -22,6 +22,7 @@ const Notification: React.FC<NotificationProps> = ({ message, onClose }) => {
       <div className="ml-4 flex-shrink-0">
         <button 
           onClick={onClose} 
+          title="Close notification"
           className="bg-white dark:bg-slate-800 rounded-md inline-flex text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
         >
           <span className="sr-only">Close</span>

@@ -181,7 +181,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                                 className="w-20 px-2 py-1 border border-slate-300 rounded-md text-sm dark:bg-slate-700 dark:border-slate-600"
                                                 required
                                             />
-                                            <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="p-1 text-slate-400 hover:text-red-500">
+                                            <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="p-1 text-slate-400 hover:text-red-500" title="Remove this option">
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -192,7 +192,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 </button>
                             </div>
                         </div>
-                        <button type="button" onClick={() => removeQuestion(qIndex)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                        <button type="button" onClick={() => removeQuestion(qIndex)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Remove this question">
                             <TrashIcon className="w-5 h-5"/>
                         </button>
                     </div>
@@ -202,6 +202,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                 <button
                 type="button"
                 onClick={addQuestion}
+                title="Add a new blank question to the questionnaire"
                 className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-dashed border-slate-400 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none"
                 >
                 <PlusIcon className="w-5 h-5 mr-2" />
@@ -212,6 +213,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                         type="button"
                         onClick={handleGenerateQuestions}
                         disabled={isGenerating}
+                        title="Use AI to generate more questions based on the existing traits"
                         className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                     <SparklesIcon className="w-5 h-5 mr-2" />

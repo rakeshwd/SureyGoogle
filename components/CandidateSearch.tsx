@@ -63,6 +63,7 @@ const CandidateSearch: React.FC<CandidateSearchProps> = ({ results, questionnair
                 onClick={handleCloseCertificate}
                 className="absolute top-0 right-0 m-2 bg-white dark:bg-slate-700 rounded-full p-2 text-slate-600 dark:text-slate-300 hover:text-red-500 z-20 no-print"
                 aria-label="Close certificate view"
+                title="Close certificate view"
               >
                 <XIcon className="w-6 h-6" />
               </button>
