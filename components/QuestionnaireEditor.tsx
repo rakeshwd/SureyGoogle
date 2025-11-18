@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Questionnaire, Question, behavioralTraits } from '../types';
-import { PlusIcon, TrashIcon, SparklesIcon } from './icons';
+import { PlusIcon, TrashIcon, SparklesIcon, InformationCircleIcon } from './icons';
 import { LIKERT_OPTIONS } from '../constants';
 import { generateSurveyQuestions, hasApiKey } from '../services/geminiService';
 
@@ -173,14 +173,22 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                                 className="flex-grow px-2 py-1 border border-slate-300 rounded-md text-sm dark:bg-slate-700 dark:border-slate-600"
                                                 required
                                             />
-                                            <input
-                                                type="number"
-                                                value={opt.score}
-                                                onChange={(e) => handleOptionChange(qIndex, optIndex, 'score', e.target.value)}
-                                                placeholder="Score"
-                                                className="w-20 px-2 py-1 border border-slate-300 rounded-md text-sm dark:bg-slate-700 dark:border-slate-600"
-                                                required
-                                            />
+                                            <div className="flex items-center space-x-1">
+                                                <input
+                                                    type="number"
+                                                    value={opt.score}
+                                                    onChange={(e) => handleOptionChange(qIndex, optIndex, 'score', e.target.value)}
+                                                    placeholder="Score"
+                                                    className="w-20 px-2 py-1 border border-slate-300 rounded-md text-sm dark:bg-slate-700 dark:border-slate-600"
+                                                    required
+                                                />
+                                                <div className="relative group">
+                                                    <InformationCircleIcon className="w-5 h-5 text-slate-400 cursor-help" />
+                                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-slate-800 text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+                                                        Scores should be relative to the difficulty or importance of the option. Higher scores typically indicate a more desired trait.
+                                                    </span>
+                                                </div>
+                                            </div>
                                             <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="p-1 text-slate-400 hover:text-red-500" title="Remove this option">
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>

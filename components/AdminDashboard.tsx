@@ -268,76 +268,73 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Certificate Template Section */}
-        <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold mb-4">Certificate Template</h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
-                <CertificateTemplateEditor
-                    template={certificateTemplate}
-                    onSave={onSaveCertificateTemplate}
-                />
-            </div>
-        </div>
-
-        {/* Application Settings */}
-        <div>
-            <h2 className="text-2xl font-bold mb-4">Application Settings</h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
-              <fieldset>
-                <legend className="text-base font-medium text-slate-900 dark:text-white">Data Source</legend>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Control where the application reads and writes data.
-                </p>
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center">
-                    <input
-                      id="browser"
-                      name="data-source"
-                      type="radio"
-                      value="browser"
-                      checked={appSettings.dataSource === 'browser'}
-                      onChange={handleDataSourceChange}
-                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
-                    />
-                    <label htmlFor="browser" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Browser Storage <span className="text-xs text-slate-500">(Persistent)</span>
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      id="database"
-                      name="data-source"
-                      type="radio"
-                      value="database"
-                      checked={appSettings.dataSource === 'database'}
-                      onChange={handleDataSourceChange}
-                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
-                    />
-                    <label htmlFor="database" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Database <span className="text-xs text-slate-500">(Simulated, resets on refresh)</span>
-                    </label>
-                  </div>
-                </div>
-              </fieldset>
-              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                <h3 className="text-base font-medium text-slate-900 dark:text-white">Danger Zone</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    This action is irreversible and will reset the application to its default state.
-                </p>
-                <div className="mt-4">
-                    <button
-                      onClick={handleDeleteAllDataClick}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                      Delete All Data
-                    </button>
-                </div>
-              </div>
-            </div>
-        </div>
+      {/* Certificate Template Section */}
+      <div>
+          <h2 className="text-2xl font-bold mb-4">Certificate Template</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
+              <CertificateTemplateEditor
+                  template={certificateTemplate}
+                  onSave={onSaveCertificateTemplate}
+              />
+          </div>
       </div>
 
+      {/* Application Settings */}
+      <div>
+          <h2 className="text-2xl font-bold mb-4">Application Settings</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
+            <fieldset>
+              <legend className="text-base font-medium text-slate-900 dark:text-white">Data Source</legend>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Control where the application reads and writes data.
+              </p>
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center">
+                  <input
+                    id="browser"
+                    name="data-source"
+                    type="radio"
+                    value="browser"
+                    checked={appSettings.dataSource === 'browser'}
+                    onChange={handleDataSourceChange}
+                    className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
+                  />
+                  <label htmlFor="browser" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Browser Storage <span className="text-xs text-slate-500">(Persistent)</span>
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="database"
+                    name="data-source"
+                    type="radio"
+                    value="database"
+                    checked={appSettings.dataSource === 'database'}
+                    onChange={handleDataSourceChange}
+                    className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
+                  />
+                  <label htmlFor="database" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Database <span className="text-xs text-slate-500">(Simulated, resets on refresh)</span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <h3 className="text-base font-medium text-slate-900 dark:text-white">Danger Zone</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  This action is irreversible and will reset the application to its default state.
+              </p>
+              <div className="mt-4">
+                  <button
+                    onClick={handleDeleteAllDataClick}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    Delete All Data
+                  </button>
+              </div>
+            </div>
+          </div>
+      </div>
 
       {/* Questionnaires Section */}
       <div>

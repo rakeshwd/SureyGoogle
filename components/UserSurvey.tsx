@@ -31,8 +31,8 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
   };
   
   const handleSubmit = () => {
-    // Fix for line 35: Explicitly cast score to a number as it was inferred as `unknown`.
-    const totalScore = Object.values(answers).reduce((sum, score) => sum + Number(score), 0);
+    // FIX: Explicitly type the accumulator `sum` as a number and use `Number()` to safely convert the score, resolving the "+" operator error.
+    const totalScore = Object.values(answers).reduce((sum: number, score) => sum + Number(score), 0);
     const maxScore = questionnaire.questions.reduce((sum, q) => sum + Math.max(...q.options.map(opt => opt.score)), 0);
     
     const result: SurveyResult = {
@@ -41,7 +41,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
         userName: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
         questionnaireId: questionnaire.id,
         questionnaireTitle: questionnaire.title,
-        // Fix for line 46: Explicitly cast score to a number to match the SurveyResult type.
+        // FIX: Use `Number()` to correctly cast the score value, preventing type assignment errors when score is inferred as 'unknown'.
         answers: Object.entries(answers).map(([questionId, score]) => ({ questionId, score: Number(score) })),
         totalScore,
         maxScore,
@@ -99,7 +99,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
             {currentQuestionIndex < totalQuestions - 1 ? (
                 <button 
                     onClick={goToNext}
-                    disabled={!answers[currentQuestion.id]}
+                    disabled={!answers.hasOwnProperty(currentQuestion.id)}
                     className="px-6 py-2 text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-orange-300 disabled:cursor-not-allowed"
                 >
                     Next
@@ -107,7 +107,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
             ) : (
                 <button 
                     onClick={handleSubmit}
-                    disabled={!answers[currentQuestion.id]}
+                    disabled={!answers.hasOwnProperty(currentQuestion.id)}
                     className="px-6 py-2 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-300 disabled:cursor-not-allowed"
                 >
                     Submit

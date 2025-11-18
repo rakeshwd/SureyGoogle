@@ -11,9 +11,11 @@ import { ImageIcon, LogoutIcon } from './components/icons';
 import { SpinnerIcon } from './components/icons';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
+import IndexPage from './components/IndexPage';
 
 
 type AuthView = 'login' | 'register' | 'forgotPassword' | 'resetPassword';
+type AppView = 'index' | 'auth' | 'dashboard';
 
 const App: React.FC = () => {
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
@@ -27,6 +29,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState<AppView>('index');
 
 
   const loadData = async () => {
@@ -64,6 +67,7 @@ const App: React.FC = () => {
     const token = params.get('resetToken');
     if (token) {
         setResetToken(token);
+        setCurrentView('auth');
         setAuthView('resetPassword');
     }
     loadData();
@@ -155,7 +159,7 @@ const App: React.FC = () => {
   const handleLogout = async () => {
     await api.logout();
     setCurrentUser(null);
-    setAuthView('login');
+    setCurrentView('index');
   };
 
   const handleUpdateUser = async (user: User) => {
@@ -200,15 +204,19 @@ const App: React.FC = () => {
   );
 
   const renderContent = () => {
-    if (isLoading || !certificateTemplate || !appSettings) {
-        return (
-            <div className="flex justify-center items-center pt-20">
-                <SpinnerIcon className="h-10 w-10 text-orange-500" />
-            </div>
-        );
+    if (isLoading) {
+      return renderLoading();
     }
 
     if (currentUser) {
+      if (!certificateTemplate || !appSettings) {
+        return (
+          <div className="flex justify-center items-center pt-20">
+            <SpinnerIcon className="h-10 w-10 text-orange-500" />
+          </div>
+        );
+      }
+
       if (currentUser.role === 'admin') {
         return (
           <AdminDashboard
@@ -234,11 +242,11 @@ const App: React.FC = () => {
 
       if (currentUser.role === 'recruiter') {
         return (
-            <RecruiterDashboard
-                questionnaires={questionnaires}
-                results={results}
-                certificateTemplate={certificateTemplate}
-            />
+          <RecruiterDashboard
+            questionnaires={questionnaires}
+            results={results}
+            certificateTemplate={certificateTemplate}
+          />
         );
       }
       
@@ -254,39 +262,48 @@ const App: React.FC = () => {
       );
     }
     
-    if (authView === 'login') {
-        return <LoginPage 
-          onLogin={handleLogin} 
-          onNavigateToRegister={() => setAuthView('register')}
-          onNavigateToForgotPassword={() => setAuthView('forgotPassword')} 
-        />
-    }
-
-    if (authView === 'forgotPassword') {
-        return <ForgotPasswordPage onNavigateToLogin={() => setAuthView('login')} />;
-    }
-
-    if (authView === 'resetPassword' && resetToken) {
-        return <ResetPasswordPage 
-            token={resetToken} 
-            onResetSuccess={() => {
-                showNotification("Password reset successfully. Please log in.");
-                setAuthView('login');
-                setResetToken(null);
-                // Clean up URL
-                window.history.pushState({}, document.title, window.location.pathname);
-            }} 
-            onInvalidToken={() => {
-                showNotification("Invalid or expired password reset link.");
-                setAuthView('login');
-                setResetToken(null);
-                 // Clean up URL
-                window.history.pushState({}, document.title, window.location.pathname);
-            }}
-        />
+    // Logged-out user flows
+    switch (currentView) {
+      case 'index':
+        return <IndexPage onNavigateToAuth={() => {
+            setCurrentView('auth');
+            setAuthView('login');
+        }} />;
+      
+      case 'auth':
+        switch (authView) {
+          case 'login':
+            return <LoginPage 
+              onLogin={handleLogin} 
+              onNavigateToRegister={() => setAuthView('register')}
+              onNavigateToForgotPassword={() => setAuthView('forgotPassword')} 
+            />;
+          case 'register':
+            return <UserAuth onRegister={handleRegister} onNavigateToLogin={() => setAuthView('login')} />
+          case 'forgotPassword':
+            return <ForgotPasswordPage onNavigateToLogin={() => setAuthView('login')} />;
+          case 'resetPassword':
+            if (resetToken) {
+              return <ResetPasswordPage 
+                token={resetToken} 
+                onResetSuccess={() => {
+                    showNotification("Password reset successfully. Please log in.");
+                    setAuthView('login');
+                    setResetToken(null);
+                    window.history.pushState({}, document.title, window.location.pathname);
+                }} 
+                onInvalidToken={() => {
+                    showNotification("Invalid or expired password reset link.");
+                    setAuthView('login');
+                    setResetToken(null);
+                    window.history.pushState({}, document.title, window.location.pathname);
+                }}
+              />
+            }
+        }
     }
     
-    return <UserAuth onRegister={handleRegister} onNavigateToLogin={() => setAuthView('login')} />
+    return <IndexPage onNavigateToAuth={() => setCurrentView('auth')} />;
   };
 
   return (
