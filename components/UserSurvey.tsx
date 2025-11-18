@@ -31,7 +31,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
   };
   
   const handleSubmit = () => {
-    // FIX: Explicitly cast score to a number as it is inferred as `unknown`.
+    // Fix for line 35: Explicitly cast score to a number as it was inferred as `unknown`.
     const totalScore = Object.values(answers).reduce((sum, score) => sum + Number(score), 0);
     const maxScore = questionnaire.questions.reduce((sum, q) => sum + Math.max(...q.options.map(opt => opt.score)), 0);
     
@@ -41,7 +41,7 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
         userName: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
         questionnaireId: questionnaire.id,
         questionnaireTitle: questionnaire.title,
-        // FIX: Explicitly cast score to a number to match the SurveyResult type.
+        // Fix for line 46: Explicitly cast score to a number to match the SurveyResult type.
         answers: Object.entries(answers).map(([questionId, score]) => ({ questionId, score: Number(score) })),
         totalScore,
         maxScore,
