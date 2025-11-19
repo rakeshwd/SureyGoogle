@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Questionnaire, SurveyResult, User, CertificateTemplate } from '../types';
 import UserSurvey from './UserSurvey';
@@ -52,7 +51,23 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
   };
 
   const handleDownload = () => {
-      window.print();
+    if (viewingCertificate) {
+        // Store original title
+        const originalTitle = document.title;
+        
+        // Set clean filename for "Save as PDF"
+        const safeUserName = viewingCertificate.userName.replace(/[^a-z0-9]/gi, '_');
+        const safeTitle = viewingCertificate.questionnaireTitle.replace(/[^a-z0-9]/gi, '_');
+        document.title = `Certificate_${safeUserName}_${safeTitle}`;
+
+        // Trigger print
+        window.print();
+
+        // Restore title after a small delay to ensure the print dialog picks it up
+        setTimeout(() => {
+            document.title = originalTitle;
+        }, 500);
+    }
   };
 
   const handleNativeShare = async () => {
