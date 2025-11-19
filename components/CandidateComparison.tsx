@@ -8,7 +8,8 @@ interface CandidateComparisonProps {
   onClose: () => void;
 }
 
-const COMPARISON_COLORS = ['#f97316', '#1d4ed8', '#f59e0b', '#dc2626', '#2563eb'];
+// Replaced orange (#f97316) with teal (#14b8a6)
+const COMPARISON_COLORS = ['#14b8a6', '#1d4ed8', '#f59e0b', '#dc2626', '#2563eb'];
 
 const RadarChart: React.FC<{
     data: { userName: string; traitScores: Record<string, number> }[];
@@ -107,7 +108,7 @@ const CandidateComparison: React.FC<CandidateComparisonProps> = ({ results, ques
         <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4">
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
                 <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
-                    <h2 className="text-xl font-bold">Candidate Comparison: <span className="text-orange-500 dark:text-orange-400">{questionnaire.title}</span></h2>
+                    <h2 className="text-xl font-bold">Candidate Comparison: <span className="text-teal-500 dark:text-teal-400">{questionnaire.title}</span></h2>
                     <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-full" title="Close comparison view">
                         <XIcon className="w-6 h-6" />
                     </button>
@@ -153,7 +154,7 @@ const CandidateComparison: React.FC<CandidateComparisonProps> = ({ results, ques
                     </div>
                 </div>
                 <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex justify-end">
-                    <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-md shadow-sm hover:bg-orange-600">
+                    <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600">
                         Close
                     </button>
                 </div>

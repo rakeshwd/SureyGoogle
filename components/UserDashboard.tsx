@@ -140,7 +140,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
                 <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Celebrate Your Achievement!</h3>
                     <p className="mt-2 text-slate-600 dark:text-slate-400">
-                        You've earned a score of <span className="font-bold text-orange-500">{percentageScore}%</span>. Sharing this certificate can increase your visibility to top recruiters by 3x.
+                        You've earned a score of <span className="font-bold text-teal-500">{percentageScore}%</span>. Sharing this certificate can increase your visibility to top recruiters by 3x.
                     </p>
                 </div>
                 
@@ -203,14 +203,14 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
           {questionnaires.map((q) => (
             <div key={q.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 flex flex-col justify-between transition-transform hover:scale-105 duration-300">
               <div className="flex-grow">
-                 <BriefcaseIcon className="h-8 w-8 text-orange-500 mb-3" />
+                 <BriefcaseIcon className="h-8 w-8 text-teal-500 mb-3" />
                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">{q.title}</h4>
                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{q.questions.length} questions</p>
               </div>
               <div className="mt-6">
                 <button
                   onClick={() => handleStartSurvey(q)}
-                  className="w-full px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                  className="w-full px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                 >
                   Start Survey
                 </button>
@@ -230,12 +230,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
                          <CheckCircleIcon className="h-8 w-8 text-green-500 mb-3" />
                          <h4 className="text-lg font-bold text-slate-900 dark:text-white">{r.questionnaireTitle}</h4>
                          <p className="text-sm text-slate-500 dark:text-slate-400">Completed: {new Date(r.completedAt).toLocaleDateString()}</p>
-                         <p className="mt-4 text-4xl font-bold text-orange-500 dark:text-orange-400">
+                         <p className="mt-4 text-4xl font-bold text-teal-500 dark:text-teal-400">
                             {Math.round((r.totalScore / r.maxScore) * 100)}%
                          </p>
                        </div>
                        <div className="mt-6">
-                            <button onClick={() => setViewingCertificate(r)} className="w-full text-center text-sm font-semibold text-orange-500 hover:text-orange-400 group-hover:underline">
+                            <button onClick={() => setViewingCertificate(r)} className="w-full text-center text-sm font-semibold text-teal-500 hover:text-teal-400 group-hover:underline">
                                 View Certificate
                             </button>
                        </div>

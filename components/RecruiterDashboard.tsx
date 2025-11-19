@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Questionnaire, SurveyResult, CertificateTemplate } from '../types';
 import { BriefcaseIcon, ScaleIcon, SearchIcon, XIcon, FilterIcon } from './icons';
@@ -11,11 +10,11 @@ const TraitAnalysisBar: React.FC<{ trait: string; averageScore: number }> = ({ t
         <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
             <div className="flex justify-between items-center mb-1">
                 <span className="text-md font-medium text-slate-800 dark:text-slate-200">{trait}</span>
-                <span className="text-md font-semibold text-orange-500 dark:text-orange-400">{percentage}%</span>
+                <span className="text-md font-semibold text-teal-500 dark:text-teal-400">{percentage}%</span>
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
                 <div 
-                    className="bg-orange-500 h-2.5 rounded-full" 
+                    className="bg-teal-500 h-2.5 rounded-full" 
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
@@ -182,7 +181,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
 
             <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
-                    <BriefcaseIcon className="w-8 h-8 mr-3 text-orange-500 dark:text-orange-400"/>
+                    <BriefcaseIcon className="w-8 h-8 mr-3 text-teal-500 dark:text-teal-400"/>
                     Recruiter Dashboard
                 </h2>
             </div>
@@ -196,7 +195,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                             id="questionnaire-filter"
                             value={selectedQuestionnaireId}
                             onChange={(e) => setSelectedQuestionnaireId(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                         >
                             <option value="all">All Questionnaires</option>
                             {questionnaires.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
@@ -218,7 +217,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                     <button
                         onClick={() => setIsComparisonModalOpen(true)}
                         disabled={!isComparisonValid}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-orange-300 disabled:cursor-not-allowed"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-300 disabled:cursor-not-allowed"
                         title={!isComparisonValid && selectedResults.length > 1 ? "Please select results from the same questionnaire." : "Compare scores of selected candidates side-by-side"}
                     >
                         <ScaleIcon className="w-5 h-5 mr-2" />
@@ -233,13 +232,13 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                         </div>
                         <input
                             type="text" placeholder="Search by candidate name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
+                            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-slate-700 dark:border-slate-600"
                             aria-label="Search candidates"
                         />
                     </div>
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className={`inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium ${showFilters ? 'bg-orange-50 text-orange-700 border-orange-500 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-white text-slate-700 dark:bg-slate-700 dark:text-slate-200'} hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors`}
+                        className={`inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium ${showFilters ? 'bg-teal-50 text-teal-700 border-teal-500 dark:bg-teal-900/30 dark:text-teal-400' : 'bg-white text-slate-700 dark:bg-slate-700 dark:text-slate-200'} hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors`}
                     >
                         <FilterIcon className="h-5 w-5 mr-2" />
                         Filters
@@ -254,7 +253,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                             <select
                                 value={hubQuestionnaireFilter}
                                 onChange={(e) => setHubQuestionnaireFilter(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                 aria-label="Filter by questionnaire"
                             >
                                 <option value="all">All Questionnaires</option>
@@ -273,7 +272,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                                     placeholder="Min"
                                     value={minScore}
                                     onChange={(e) => setMinScore(e.target.value === '' ? '' : Number(e.target.value))}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                     aria-label="Minimum score"
                                 />
                                 <span className="text-slate-500">-</span>
@@ -284,7 +283,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                                     placeholder="Max"
                                     value={maxScore}
                                     onChange={(e) => setMaxScore(e.target.value === '' ? '' : Number(e.target.value))}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                     aria-label="Maximum score"
                                 />
                             </div>
@@ -298,7 +297,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                     aria-label="Start date"
                                 />
                                 <span className="text-slate-500">-</span>
@@ -306,7 +305,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                     aria-label="End date"
                                 />
                             </div>
@@ -316,7 +315,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredResults.map(result => (
-                        <div key={result.id} className={`rounded-lg p-4 transition-all duration-200 cursor-pointer ${selectedResultIds.has(result.id) ? 'bg-orange-50 dark:bg-orange-900/30 ring-2 ring-orange-500' : 'bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+                        <div key={result.id} className={`rounded-lg p-4 transition-all duration-200 cursor-pointer ${selectedResultIds.has(result.id) ? 'bg-teal-50 dark:bg-teal-900/30 ring-2 ring-teal-500' : 'bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
                             <div className="flex items-start justify-between">
                                 <div className="flex-grow" onClick={() => setViewingCertificate(result)}>
                                     <h4 className="font-bold text-slate-900 dark:text-white">{result.userName}</h4>
@@ -326,12 +325,12 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                                     type="checkbox"
                                     checked={selectedResultIds.has(result.id)}
                                     onChange={() => handleSelectResult(result.id)}
-                                    className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 rounded dark:bg-slate-900 dark:border-slate-600 ml-2"
+                                    className="h-4 w-4 text-teal-500 focus:ring-teal-500 border-slate-300 rounded dark:bg-slate-900 dark:border-slate-600 ml-2"
                                     aria-label={`Select candidate ${result.userName}`}
                                 />
                             </div>
                              <div className="mt-4" onClick={() => setViewingCertificate(result)}>
-                                 <p className="text-sm text-slate-600 dark:text-slate-300">Score: <span className="font-bold text-xl text-orange-500">{Math.round((result.totalScore / result.maxScore) * 100)}%</span></p>
+                                 <p className="text-sm text-slate-600 dark:text-slate-300">Score: <span className="font-bold text-xl text-teal-500">{Math.round((result.totalScore / result.maxScore) * 100)}%</span></p>
                                  <p className="text-xs text-slate-400 mt-1">Completed: {new Date(result.completedAt).toLocaleDateString()}</p>
                              </div>
                         </div>

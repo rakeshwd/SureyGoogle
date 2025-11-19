@@ -197,7 +197,7 @@ const App: React.FC = () => {
   const renderLoading = () => (
     <div className="flex justify-center items-center h-screen">
       <div className="text-center">
-        <SpinnerIcon className="h-12 w-12 text-orange-500 mx-auto" />
+        <SpinnerIcon className="h-12 w-12 text-teal-500 mx-auto" />
         <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">Loading Application Data...</p>
       </div>
     </div>
@@ -212,7 +212,7 @@ const App: React.FC = () => {
       if (!certificateTemplate || !appSettings) {
         return (
           <div className="flex justify-center items-center pt-20">
-            <SpinnerIcon className="h-10 w-10 text-orange-500" />
+            <SpinnerIcon className="h-10 w-10 text-teal-500" />
           </div>
         );
       }

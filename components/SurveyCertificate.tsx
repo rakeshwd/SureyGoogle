@@ -5,14 +5,14 @@ import { LinkedInIcon, TwitterIcon, ImageIcon, DownloadIcon } from './icons';
 
 const TraitScoreBar: React.FC<{ trait: string; percentage: number }> = ({ trait, percentage }) => {
     return (
-        <div>
+        <div className="print:break-inside-avoid">
             <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 print:text-slate-600">{trait}</span>
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 print:text-slate-800">{percentage}%</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 print:text-slate-700">{trait}</span>
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 print:text-black">{percentage}%</span>
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 print:bg-slate-200">
                 <div 
-                    className="bg-orange-500 h-1.5 rounded-full print:bg-orange-500" 
+                    className="bg-teal-500 h-1.5 rounded-full print:bg-teal-600 print:print-color-adjust-exact" 
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
@@ -33,14 +33,12 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
   const traitScores = useMemo(() => {
     const scoresByTrait: Record<string, { totalScore: number; maxScore: number }> = {};
     
-    // Aggregate total and max possible scores for each trait from the questionnaire
     questionnaire.questions.forEach(q => {
         if (!scoresByTrait[q.trait]) {
             scoresByTrait[q.trait] = { totalScore: 0, maxScore: 0 };
         }
         
         const answer = result.answers.find(a => a.questionId === q.id);
-        // Use Math.max with 0 to handle cases with no options or all-zero scores safely
         const questionMaxScore = Math.max(0, ...q.options.map(o => o.score));
         
         if (answer) {
@@ -49,7 +47,6 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
         scoresByTrait[q.trait].maxScore += questionMaxScore;
     });
     
-    // Calculate the percentage for each trait and return a clean data structure
     return Object.entries(scoresByTrait).map(([trait, scores]) => {
         const percentage = scores.maxScore > 0 
             ? Math.round((scores.totalScore / scores.maxScore) * 100) 
@@ -76,7 +73,7 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
     <div className="max-w-5xl mx-auto flex flex-col items-center">
         {/* Certificate Component */}
         <div 
-            className="printable-area w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl print:shadow-none print:border print:border-slate-300 flex font-serif relative overflow-hidden print:bg-white" 
+            className="printable-area w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl print:shadow-none print:border print:border-slate-300 flex font-serif relative overflow-hidden print:overflow-hidden print:bg-white" 
             style={{ fontFamily: "'Lato', sans-serif" }}
         >
             {/* Watermark */}
@@ -91,7 +88,7 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
             )}
 
             {/* Decorative Side Panel */}
-            <div className="w-[340px] bg-slate-50 dark:bg-slate-900 print:bg-slate-50 p-8 flex flex-col justify-between relative z-10">
+            <div className="w-[340px] bg-slate-50 dark:bg-slate-900 print:bg-slate-50 p-8 flex flex-col justify-between relative z-10 print:print-color-adjust-exact">
                 <div>
                     {template.showLogo && (
                         <div className="mb-6">
@@ -99,19 +96,19 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
                                 <img src={template.logoUrl} alt="Company Logo" className="h-40 w-auto" />
                             ) : (
                                 <div className="w-40 h-40 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center print:bg-slate-200">
-                                    <ImageIcon className="w-20 h-20 text-slate-500" />
+                                    <ImageIcon className="w-20 h-20 text-slate-500 print:text-slate-500" />
                                 </div>
                             )}
                         </div>
                     )}
-                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200 print:text-slate-800" style={{fontFamily: "'Playfair Display', serif"}}>Certificate of</h1>
-                    <h2 className="text-5xl font-bold text-orange-500 dark:text-orange-400 print:text-orange-500" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
+                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200 print:text-black" style={{fontFamily: "'Playfair Display', serif"}}>Certificate of</h1>
+                    <h2 className="text-5xl font-bold text-teal-500 dark:text-teal-400 print:text-teal-600" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
                     {template.customMessage && (
-                        <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 italic print:text-slate-600">"{template.customMessage}"</p>
+                        <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 italic print:text-slate-700">"{template.customMessage}"</p>
                     )}
                 </div>
                 <div>
-                    <p className="text-xs text-slate-400 mt-4 print:text-slate-400">
+                    <p className="text-xs text-slate-400 mt-4 print:text-slate-500">
                         Issued on: {new Date(result.completedAt).toLocaleDateString()}
                     </p>
                 </div>
@@ -119,21 +116,21 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
 
             {/* Main Content Panel */}
             <div className="flex-1 p-12 flex flex-col justify-center relative z-10">
-                <p className="text-md uppercase tracking-widest text-slate-500 dark:text-slate-400 print:text-slate-500">This certifies that</p>
-                <p className="mt-2 text-5xl font-bold text-slate-800 dark:text-slate-100 print:text-slate-800" style={{fontFamily: "'Playfair Display', serif"}}>{result.userName}</p>
-                <p className="mt-4 text-md text-slate-500 dark:text-slate-400 print:text-slate-500">has successfully completed the assessment for</p>
-                <p className="mt-1 text-2xl font-semibold text-slate-700 dark:text-slate-200 print:text-slate-700">{result.questionnaireTitle}</p>
+                <p className="text-md uppercase tracking-widest text-slate-500 dark:text-slate-400 print:text-slate-600">This certifies that</p>
+                <p className="mt-2 text-5xl font-bold text-slate-800 dark:text-slate-100 print:text-black" style={{fontFamily: "'Playfair Display', serif"}}>{result.userName}</p>
+                <p className="mt-4 text-md text-slate-500 dark:text-slate-400 print:text-slate-600">has successfully completed the assessment for</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-700 dark:text-slate-200 print:text-slate-800">{result.questionnaireTitle}</p>
                 
                 <div className="mt-10 w-full flex items-center space-x-12">
                      {template.showOverallScore && (
                         <div className="text-center">
-                            <p className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 print:text-slate-500">Overall Score</p>
-                            <p className="text-7xl font-bold text-slate-900 dark:text-white mt-1 print:text-slate-900">{percentageScore}<span className="text-4xl">%</span></p>
+                            <p className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 print:text-slate-600">Overall Score</p>
+                            <p className="text-7xl font-bold text-slate-900 dark:text-white mt-1 print:text-black">{percentageScore}<span className="text-4xl">%</span></p>
                         </div>
                     )}
                      {template.showTraitScores && (
                         <div className="flex-1">
-                             <h3 className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 print:text-slate-500">Trait Breakdown</h3>
+                             <h3 className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 print:text-slate-600">Trait Breakdown</h3>
                              <div className="space-y-3">
                                 {traitScores.map(({ trait, percentage }) => (
                                     <TraitScoreBar key={trait} trait={trait} percentage={percentage} />
@@ -146,11 +143,11 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
             </div>
             
              {/* Decorative watermark/seal */}
-            <div className="absolute bottom-8 right-8 z-20">
-                <div className="w-24 h-24 border-2 border-amber-400 rounded-full flex items-center justify-center">
-                    <div className="w-20 h-20 border-2 border-amber-400 rounded-full text-center flex flex-col items-center justify-center">
-                        <span className="text-xs font-bold text-amber-500">BEHAVIORAL</span>
-                        <span className="text-xs font-bold text-amber-500">ASSESSMENT</span>
+            <div className="absolute bottom-8 right-8 z-20 print:z-20">
+                <div className="w-24 h-24 border-2 border-amber-400 print:border-amber-500 rounded-full flex items-center justify-center">
+                    <div className="w-20 h-20 border-2 border-amber-400 print:border-amber-500 rounded-full text-center flex flex-col items-center justify-center">
+                        <span className="text-xs font-bold text-amber-500 print:text-amber-600">BEHAVIORAL</span>
+                        <span className="text-xs font-bold text-amber-500 print:text-amber-600">ASSESSMENT</span>
                     </div>
                 </div>
             </div>

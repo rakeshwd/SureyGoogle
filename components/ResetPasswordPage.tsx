@@ -49,7 +49,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ token, onResetSuc
     <div className="max-w-md mx-auto mt-10">
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-8">
         <div className="text-center mb-6">
-            <KeyIcon className="h-10 w-10 mx-auto text-orange-500" />
+            <KeyIcon className="h-10 w-10 mx-auto text-teal-500" />
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-4">Set a New Password</h2>
         </div>
         {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
@@ -60,7 +60,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ token, onResetSuc
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="New Password"
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 dark:bg-slate-700 dark:border-slate-600"
             required
             aria-label="New Password"
           />
@@ -70,14 +70,14 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ token, onResetSuc
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm New Password"
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 dark:bg-slate-700 dark:border-slate-600"
             required
             aria-label="Confirm New Password"
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
           >
             {loading ? 'Resetting...' : 'Reset Password'}
           </button>

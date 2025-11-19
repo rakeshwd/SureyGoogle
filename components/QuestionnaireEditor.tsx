@@ -123,7 +123,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
               value={editedQuestionnaire.title}
               onChange={handleTitleChange}
               placeholder="Questionnaire Title"
-              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 dark:bg-slate-700 dark:border-slate-600"
               required
               aria-label="Questionnaire Title"
             />
@@ -139,7 +139,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 value={q.text}
                                 onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
                                 placeholder="Question Text"
-                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                 rows={2}
                                 required
                                 aria-label="Question Text"
@@ -148,7 +148,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 <select
                                     value={q.trait}
                                     onChange={(e) => updateQuestion(qIndex, { trait: e.target.value })}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                     aria-label="Select Trait"
                                 >
                                 {behavioralTraits.map(trait => (
@@ -160,7 +160,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                     value={q.behavior || ''}
                                     onChange={(e) => updateQuestion(qIndex, { behavior: e.target.value })}
                                     placeholder="Specific Behavior (optional)"
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                     aria-label="Specific Behavior"
                                 />
                             </div>
@@ -201,7 +201,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                         </div>
                                     ))}
                                 </div>
-                                <button type="button" onClick={() => addOption(qIndex)} className="mt-2 text-sm text-orange-500 hover:text-orange-400 font-medium">
+                                <button type="button" onClick={() => addOption(qIndex)} className="mt-2 text-sm text-teal-500 hover:text-teal-400 font-medium">
                                     + Add Option
                                 </button>
                             </div>
@@ -247,7 +247,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
             </button>
             <button
               type="submit"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-md shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-teal-500 border border-transparent rounded-md shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
             >
               Save Questionnaire
             </button>

@@ -87,7 +87,7 @@ const CandidateSearch: React.FC<CandidateSearchProps> = ({ results, questionnair
             </div>
             <input
               type="text" placeholder="Search by candidate name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-slate-700 dark:border-slate-600"
               aria-label="Search candidates"
             />
         </div>
@@ -97,9 +97,9 @@ const CandidateSearch: React.FC<CandidateSearchProps> = ({ results, questionnair
               <div key={result.id} className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
                   <h4 className="font-bold text-slate-900 dark:text-white">{result.userName}</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400">{result.questionnaireTitle}</p>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">Score: <span className="font-bold text-lg text-orange-500">{Math.round((result.totalScore / result.maxScore) * 100)}%</span></p>
+                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">Score: <span className="font-bold text-lg text-teal-500">{Math.round((result.totalScore / result.maxScore) * 100)}%</span></p>
                   <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                      <button onClick={() => handleViewCertificate(result)} className="text-sm font-medium text-orange-500 hover:text-orange-400">
+                      <button onClick={() => handleViewCertificate(result)} className="text-sm font-medium text-teal-500 hover:text-teal-400">
                           View Certificate
                       </button>
                       {renderActions && renderActions(result)}

@@ -22,7 +22,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ onNavigateToAuth }) => {
         <div className="mt-8">
           <button
             onClick={onNavigateToAuth}
-            className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg transform hover:scale-105 transition-transform duration-200"
+            className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 shadow-lg transform hover:scale-105 transition-transform duration-200"
           >
             Get Started Now
           </button>
@@ -60,11 +60,11 @@ const IndexPage: React.FC<IndexPageProps> = ({ onNavigateToAuth }) => {
                         </div>
                         
                         <div className="relative z-10 flex flex-col items-center w-1/3 group">
-                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">
                                 3x More Likely
                             </div>
-                            <div className="mb-2 text-sm font-bold text-orange-600 dark:text-orange-400 transition-transform group-hover:-translate-y-1">84%</div>
-                            <div className="w-full bg-gradient-to-t from-orange-500 to-orange-400 rounded-t-lg h-[84%] shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"></div>
+                            <div className="mb-2 text-sm font-bold text-teal-600 dark:text-teal-400 transition-transform group-hover:-translate-y-1">84%</div>
+                            <div className="w-full bg-gradient-to-t from-teal-500 to-teal-400 rounded-t-lg h-[84%] shadow-[0_0_20px_rgba(20,184,166,0.3)] transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(20,184,166,0.5)]"></div>
                             <div className="mt-3 text-xs font-bold text-slate-800 dark:text-slate-200 text-center leading-tight">High Behavioral Score</div>
                         </div>
                      </div>
@@ -110,17 +110,17 @@ const IndexPage: React.FC<IndexPageProps> = ({ onNavigateToAuth }) => {
         </div>
         <div className="grid md:grid-cols-3 gap-8 text-center">
           <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg">
-            <BriefcaseIcon className="h-12 w-12 mx-auto text-orange-500" />
+            <BriefcaseIcon className="h-12 w-12 mx-auto text-teal-500" />
             <h3 className="mt-4 text-xl font-semibold">Access High-Paying Jobs</h3>
             <p className="mt-2 text-slate-600 dark:text-slate-400">Companies pay a premium for candidates with proven leadership, teamwork, and problem-solving skills. Our assessments help you demonstrate your value.</p>
           </div>
           <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg">
-            <ScaleIcon className="h-12 w-12 mx-auto text-orange-500" />
+            <ScaleIcon className="h-12 w-12 mx-auto text-teal-500" />
             <h3 className="mt-4 text-xl font-semibold">Stand Out from the Crowd</h3>
             <p className="mt-2 text-slate-600 dark:text-slate-400">Technical skills get you the interview; behavioral traits get you the job. We provide the tools to highlight your unique soft skills and professional character.</p>
           </div>
           <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg">
-            <CheckCircleIcon className="h-12 w-12 mx-auto text-orange-500" />
+            <CheckCircleIcon className="h-12 w-12 mx-auto text-teal-500" />
             <h3 className="mt-4 text-xl font-semibold">Fuel Your Career Growth</h3>
             <p className="mt-2 text-slate-600 dark:text-slate-400">Understanding and articulating your behavioral strengths is not just for landing a job—it's the key to long-term success and advancement.</p>
           </div>
@@ -156,7 +156,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ onNavigateToAuth }) => {
         <div className="mt-8">
           <button
             onClick={onNavigateToAuth}
-            className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg transform hover:scale-105 transition-transform duration-200"
+            className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 shadow-lg transform hover:scale-105 transition-transform duration-200"
           >
             Sign Up and Get Certified
           </button>
