@@ -1,5 +1,4 @@
 
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Questionnaire, SurveyResult, CertificateTemplate } from '../types';
 import { BriefcaseIcon, ScaleIcon, SearchIcon, XIcon, FilterIcon } from './icons';
@@ -160,7 +159,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
 
             {viewingCertificate && correspondingQuestionnaire && (
                 <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4" ref={certificateModalRef}>
-                    <div className="bg-transparent rounded-lg relative w-full h-full max-w-5xl max-h-full flex items-center justify-center">
+                    <div className="bg-transparent rounded-lg relative w-full h-full max-w-3xl max-h-full flex items-center justify-center">
                         <button
                             onClick={() => setViewingCertificate(null)}
                             className="absolute top-0 right-0 m-2 bg-white dark:bg-slate-700 rounded-full p-2 text-slate-600 dark:text-slate-300 hover:text-red-500 z-20 no-print"
@@ -170,7 +169,12 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                             <XIcon className="w-6 h-6" />
                         </button>
                          <div style={{ transform: `scale(${certificateScale})`, transformOrigin: 'center center', width: '1024px', height: '722px' }}>
-                            <SurveyCertificate result={viewingCertificate} questionnaire={correspondingQuestionnaire} template={certificateTemplate} />
+                            <SurveyCertificate 
+                                result={viewingCertificate} 
+                                questionnaire={correspondingQuestionnaire} 
+                                template={certificateTemplate} 
+                                showActions={false}
+                            />
                         </div>
                     </div>
                 </div>

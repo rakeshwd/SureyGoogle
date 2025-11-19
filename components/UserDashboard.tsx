@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { Questionnaire, SurveyResult, User, CertificateTemplate } from '../types';
 import UserSurvey from './UserSurvey';
 import SurveyCertificate from './SurveyCertificate';
-import { BriefcaseIcon, CheckCircleIcon } from './icons';
+import { BriefcaseIcon, CheckCircleIcon, LinkedInIcon, TwitterIcon, DownloadIcon } from './icons';
 
 interface UserDashboardProps {
   currentUser: User;
@@ -45,6 +46,42 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
     setViewingCertificate(null);
   };
 
+  const handleShare = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleDownload = () => {
+      window.print();
+  };
+
+  // Certificate Scaling Logic
+  const certificateContainerRef = useRef<HTMLDivElement>(null);
+  const [certificateScale, setCertificateScale] = useState(1);
+
+  useEffect(() => {
+    const calculateScale = () => {
+      if (viewingCertificate && certificateContainerRef.current) {
+        const container = certificateContainerRef.current;
+        const containerWidth = container.offsetWidth;
+        const contentWidth = 1024;
+        
+        if (containerWidth < contentWidth) {
+            setCertificateScale(containerWidth / contentWidth);
+        } else {
+            setCertificateScale(1);
+        }
+      }
+    };
+    
+    if (viewingCertificate) {
+        calculateScale();
+        window.addEventListener('resize', calculateScale);
+    }
+    
+    return () => window.removeEventListener('resize', calculateScale);
+  }, [viewingCertificate]);
+
+
   if (activeSurvey) {
     return <UserSurvey questionnaire={activeSurvey} onComplete={handleSurveyCompletion} currentUser={currentUser} />;
   }
@@ -55,13 +92,70 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
         return <div>Error: Could not load certificate details. <button onClick={handleCloseCertificate}>Back</button></div>
     }
 
+    const percentageScore = Math.round((viewingCertificate.totalScore / viewingCertificate.maxScore) * 100);
+    const appUrl = window.location.origin;
+    const shareText = `I just scored ${percentageScore}% on the ${viewingCertificate.questionnaireTitle} assessment! Check out USCORE to verify your behavioral skills.`;
+    const linkedInShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent('My USCORE Assessment Result')}&summary=${encodeURIComponent(shareText)}`;
+    const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent(shareText)}`;
+
     return (
-        <div>
-            <SurveyCertificate result={viewingCertificate} questionnaire={correspondingQuestionnaire} template={certificateTemplate} />
-            <div className="text-center mt-4 no-print">
+        <div className="flex flex-col items-center">
+            {/* Constrain container to tablet size (max-w-3xl) to trigger scaling */}
+            <div ref={certificateContainerRef} className="w-full max-w-3xl overflow-hidden flex justify-center shadow-2xl rounded-lg">
+                 <div style={{ 
+                     transform: `scale(${certificateScale})`, 
+                     transformOrigin: 'top center', 
+                     width: '1024px', 
+                     height: '722px', 
+                     marginBottom: `-${722 * (1 - certificateScale)}px` 
+                 }}>
+                    <SurveyCertificate 
+                        result={viewingCertificate} 
+                        questionnaire={correspondingQuestionnaire} 
+                        template={certificateTemplate} 
+                        showActions={false} 
+                    />
+                 </div>
+            </div>
+
+            {/* Sharing Section */}
+            <div className="w-full max-w-3xl mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 sm:p-8 border border-slate-100 dark:border-slate-700 no-print">
+                <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Celebrate Your Achievement!</h3>
+                    <p className="mt-2 text-slate-600 dark:text-slate-400">
+                        You've earned a score of <span className="font-bold text-orange-500">{percentageScore}%</span>. Sharing this certificate can increase your visibility to top recruiters by 3x.
+                    </p>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button
+                        onClick={() => handleShare(linkedInShareUrl)}
+                        className="flex items-center justify-center px-4 py-3 bg-[#0077B5] hover:bg-[#005582] text-white rounded-lg transition-transform transform hover:scale-105 font-semibold shadow-md"
+                    >
+                        <LinkedInIcon className="w-6 h-6 mr-2" />
+                        Share on LinkedIn
+                    </button>
+                     <button
+                        onClick={() => handleShare(twitterShareUrl)}
+                        className="flex items-center justify-center px-4 py-3 bg-[#1DA1F2] hover:bg-[#0c85d0] text-white rounded-lg transition-transform transform hover:scale-105 font-semibold shadow-md"
+                    >
+                        <TwitterIcon className="w-6 h-6 mr-2" />
+                        Share on Twitter
+                    </button>
+                     <button
+                        onClick={handleDownload}
+                        className="flex items-center justify-center px-4 py-3 bg-slate-700 hover:bg-slate-800 text-white rounded-lg transition-transform transform hover:scale-105 font-semibold shadow-md"
+                    >
+                        <DownloadIcon className="w-6 h-6 mr-2" />
+                        Download PDF
+                    </button>
+                </div>
+            </div>
+
+            <div className="text-center mt-8 no-print">
                 <button 
                     onClick={handleCloseCertificate}
-                    className="px-6 py-2 text-sm font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700"
+                    className="px-6 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                 >
                     Back to Dashboard
                 </button>
