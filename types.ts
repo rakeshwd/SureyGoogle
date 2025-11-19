@@ -72,7 +72,7 @@ export const behavioralTraits = [
   "Initiative"
 ];
 
-export type DataSource = 'browser' | 'database';
+export type DataSource = 'browser' | 'database' | 'firebase';
 
 export interface AppSettings {
   dataSource: DataSource;

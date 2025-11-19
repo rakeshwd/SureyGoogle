@@ -318,6 +318,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     Database <span className="text-xs text-slate-500">(Simulated, resets on refresh)</span>
                   </label>
                 </div>
+                <div className="flex items-center">
+                  <input
+                    id="firebase"
+                    name="data-source"
+                    type="radio"
+                    value="firebase"
+                    checked={appSettings.dataSource === 'firebase'}
+                    onChange={handleDataSourceChange}
+                    className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 dark:bg-slate-700 dark:border-slate-500"
+                  />
+                  <label htmlFor="firebase" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Firebase (Cloud) <span className="text-xs text-slate-500">(Requires config in <code>services/firebaseConfig.ts</code>)</span>
+                  </label>
+                </div>
               </div>
             </fieldset>
             <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
@@ -328,7 +342,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="mt-4">
                   <button
                     onClick={handleDeleteAllDataClick}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    disabled={appSettings.dataSource === 'firebase'}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={appSettings.dataSource === 'firebase' ? "Bulk delete disabled for cloud storage" : "Reset all data"}
                   >
                     Delete All Data
                   </button>

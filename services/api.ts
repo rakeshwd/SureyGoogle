@@ -2,6 +2,13 @@
 import { Questionnaire, SurveyResult, User, CertificateTemplate, AuditLog, AppSettings, DataSource } from '../types';
 import { sampleQuestionnaires, sampleResults, sampleUsers } from '../constants';
 import { defaultLogo } from '../assets/defaults';
+import { db, auth } from './firebaseConfig';
+import { 
+    collection, getDocs, doc, setDoc, addDoc, deleteDoc, getDoc, updateDoc
+} from 'firebase/firestore';
+import { 
+    signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut 
+} from 'firebase/auth';
 
 // --- Helper Functions ---
 const SIMULATED_DELAY = 250; // ms
@@ -98,8 +105,15 @@ export const saveAppSettings = async (settings: AppSettings): Promise<void> => {
 
 // Questionnaires
 export const fetchQuestionnaires = async (): Promise<Questionnaire[]> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) return [];
+        const querySnapshot = await getDocs(collection(db, 'questionnaires'));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Questionnaire));
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         return getMemoryStore().questionnaires;
     }
@@ -107,9 +121,15 @@ export const fetchQuestionnaires = async (): Promise<Questionnaire[]> => {
 };
 
 export const saveQuestionnaire = async (quest: Questionnaire): Promise<Questionnaire> => {
-    await simulateNetwork();
     const source = getDataSource();
     
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        await setDoc(doc(db, 'questionnaires', quest.id), quest);
+        return quest;
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         const store = getMemoryStore();
         const index = store.questionnaires.findIndex(q => q.id === quest.id);
@@ -132,9 +152,16 @@ export const saveQuestionnaire = async (quest: Questionnaire): Promise<Questionn
 };
 
 export const deleteQuestionnaire = async (id: string): Promise<void> => {
-    await simulateNetwork();
     const source = getDataSource();
-     if (source === 'database') {
+
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        await deleteDoc(doc(db, 'questionnaires', id));
+        return;
+    }
+
+    await simulateNetwork();
+    if (source === 'database') {
         const store = getMemoryStore();
         store.questionnaires = store.questionnaires.filter(q => q.id !== id);
     } else {
@@ -146,14 +173,29 @@ export const deleteQuestionnaire = async (id: string): Promise<void> => {
 
 // Results
 export const fetchResults = async (): Promise<SurveyResult[]> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) return [];
+        const querySnapshot = await getDocs(collection(db, 'results'));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SurveyResult));
+    }
+
+    await simulateNetwork();
     return source === 'database' ? getMemoryStore().results : getFromLocalStorage<SurveyResult[]>('results', []);
 };
 
 export const saveResult = async (result: SurveyResult): Promise<SurveyResult> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        // Use setDoc to preserve the ID
+        await setDoc(doc(db, 'results', result.id), result);
+        return result;
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         getMemoryStore().results.push(result);
     } else {
@@ -166,20 +208,49 @@ export const saveResult = async (result: SurveyResult): Promise<SurveyResult> =>
 
 // Users & Auth
 export const fetchUsers = async (): Promise<User[]> => {
-    await simulateNetwork();
     const source = getDataSource();
+
+    if (source === 'firebase') {
+        if (!db) return [];
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+    }
+
+    await simulateNetwork();
     return source === 'database' ? getMemoryStore().allUsers : getFromLocalStorage<User[]>('allUsers', []);
 };
 
 export const findUserByEmail = async (email: string): Promise<User | undefined> => {
-    await simulateNetwork();
+    // For firebase, this is inefficient if not indexed, but for this app scale it's okay
+    // Or we just rely on auth login. 
+    // This helper is mainly used for duplicate checks in registration in 'browser' mode.
+    // In Firebase Auth, duplicates are handled by the auth provider.
     const users = await fetchUsers();
     return users.find(u => u.email.toLowerCase() === email.toLowerCase());
 };
 
 export const registerUser = async (userData: Omit<User, 'id' | 'role'>): Promise<User> => {
-    await simulateNetwork();
     const source = getDataSource();
+
+    if (source === 'firebase') {
+        if (!auth || !db) throw new Error("Firebase not initialized");
+        // 1. Create User in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+        
+        // 2. Create User Document in Firestore
+        const newUser: User = {
+            ...userData,
+            id: userCredential.user.uid,
+            role: 'user', // Default role
+            // Don't store password in Firestore
+            password: '***' 
+        };
+        
+        await setDoc(doc(db, 'users', newUser.id), newUser);
+        return newUser;
+    }
+
+    await simulateNetwork();
     const newUser: User = { ...userData, id: `user-${Date.now()}`, role: 'user' };
 
     if (source === 'database') {
@@ -195,6 +266,31 @@ export const registerUser = async (userData: Omit<User, 'id' | 'role'>): Promise
 export type LoginResult = { user?: User; error?: 'not_found' | 'incorrect_password'; };
 
 export const login = async (email: string, password: string): Promise<LoginResult> => {
+    const source = getDataSource();
+
+    if (source === 'firebase') {
+        if (!auth || !db) return { error: 'not_found' };
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            // Fetch user details (role, name) from Firestore
+            const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+            if (userDoc.exists()) {
+                return { user: { id: userDoc.id, ...userDoc.data() } as User };
+            } else {
+                // Fallback if user exists in Auth but not Firestore (shouldn't happen in normal flow)
+                return { error: 'not_found' };
+            }
+        } catch (error: any) {
+            console.error("Firebase Login Error", error);
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email') {
+                return { error: 'not_found' };
+            } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                return { error: 'incorrect_password' };
+            }
+            return { error: 'incorrect_password' }; 
+        }
+    }
+
     await simulateNetwork();
     const users = await fetchUsers();
     const userByEmail = users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -202,7 +298,6 @@ export const login = async (email: string, password: string): Promise<LoginResul
     if (!userByEmail) return { error: 'not_found' };
     if (userByEmail.password !== password) return { error: 'incorrect_password' };
     
-    const source = getDataSource();
     if (source === 'database') {
         getMemoryStore().currentUser = userByEmail;
     } else {
@@ -212,8 +307,16 @@ export const login = async (email: string, password: string): Promise<LoginResul
 };
 
 export const logout = async (): Promise<void> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (auth) await firebaseSignOut(auth);
+        // We also clear local storage user reference for consistency in App.tsx check
+        localStorage.removeItem('currentUser');
+        return;
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         getMemoryStore().currentUser = null;
     } else {
@@ -222,8 +325,27 @@ export const logout = async (): Promise<void> => {
 };
 
 export const getCurrentUser = async (): Promise<User | null> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!auth || !db) return null;
+        const firebaseUser = auth.currentUser;
+        if (firebaseUser) {
+             const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+             if (userDoc.exists()) {
+                 return { id: userDoc.id, ...userDoc.data() } as User;
+             }
+        }
+        // If no user currently in memory, we can't persist session easily without onAuthStateChanged
+        // For this implementation, we assume simple token persistence or reliance on App re-auth
+        // but since `auth.currentUser` might be null on initial load before async init,
+        // a robust app would use an AuthProvider. 
+        // Fallback to checking if we stored a user object manually (not ideal for firebase but works for hybrid)
+        // or simply return null and force login.
+        return null; 
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         return getMemoryStore().currentUser;
     }
@@ -231,8 +353,17 @@ export const getCurrentUser = async (): Promise<User | null> => {
 };
 
 export const updateUser = async (userToUpdate: User): Promise<User> => {
-    await simulateNetwork();
     const source = getDataSource();
+
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        // Exclude password from update if it's just '***'
+        const { password, ...dataToUpdate } = userToUpdate; 
+        await setDoc(doc(db, 'users', userToUpdate.id), dataToUpdate, { merge: true });
+        return userToUpdate;
+    }
+
+    await simulateNetwork();
     
     let allUsers: User[];
     if (source === 'database') {
@@ -255,8 +386,16 @@ export const updateUser = async (userToUpdate: User): Promise<User> => {
 };
 
 export const deleteUser = async (userId: string): Promise<void> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        await deleteDoc(doc(db, 'users', userId));
+        // Note: This doesn't delete from Firebase Auth. Requires Admin SDK.
+        return;
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         const store = getMemoryStore();
         store.allUsers = store.allUsers.filter(u => u.id !== userId);
@@ -269,6 +408,9 @@ export const deleteUser = async (userId: string): Promise<void> => {
 
 export const requestPasswordReset = async (email: string): Promise<{ success: boolean }> => {
     await simulateNetwork();
+    // For Firebase, use sendPasswordResetEmail(auth, email)
+    // For now, keeping logic simple/local-simulated for non-firebase
+    
     const user = await findUserByEmail(email);
 
     if (user) {
@@ -282,15 +424,9 @@ export const requestPasswordReset = async (email: string): Promise<{ success: bo
         };
 
         await updateUser(updatedUser);
-        
-        // --- SIMULATED EMAIL ---
-        // In a real app, you would send an email here.
-        // For this simulation, we log the link to the console.
         console.log(`Password reset link for ${email}: ${window.location.origin}?resetToken=${token}`);
-        // -------------------------
     }
     
-    // Always return success to prevent user enumeration
     return { success: true };
 };
 
@@ -321,14 +457,31 @@ export const resetPassword = async (token: string, newPassword: string): Promise
 
 // Certificate Template
 export const fetchCertificateTemplate = async (): Promise<CertificateTemplate> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) return getFreshData().certificateTemplate;
+        const docSnap = await getDoc(doc(db, 'config', 'certificateTemplate'));
+        if (docSnap.exists()) {
+            return docSnap.data() as CertificateTemplate;
+        }
+        return getFreshData().certificateTemplate;
+    }
+
+    await simulateNetwork();
     return source === 'database' ? getMemoryStore().certificateTemplate : getFromLocalStorage<CertificateTemplate>('certificateTemplate', getFreshData().certificateTemplate);
 };
 
 export const saveCertificateTemplate = async (template: CertificateTemplate): Promise<CertificateTemplate> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        await setDoc(doc(db, 'config', 'certificateTemplate'), template);
+        return template;
+    }
+
+    await simulateNetwork();
     if (source === 'database') {
         getMemoryStore().certificateTemplate = template;
     } else {
@@ -339,13 +492,19 @@ export const saveCertificateTemplate = async (template: CertificateTemplate): Pr
 
 // Audit Logs
 export const fetchAuditLogs = async (): Promise<AuditLog[]> => {
-    await simulateNetwork();
     const source = getDataSource();
+    
+    if (source === 'firebase') {
+        if (!db) return [];
+        const querySnapshot = await getDocs(collection(db, 'auditLogs'));
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuditLog));
+    }
+
+    await simulateNetwork();
     return source === 'database' ? getMemoryStore().auditLogs : getFromLocalStorage<AuditLog[]>('auditLogs', []);
 };
 
 export const saveAuditLog = async (action: string, details: string, currentUser: User): Promise<AuditLog> => {
-    await simulateNetwork();
     const source = getDataSource();
     const newLog: AuditLog = {
         id: `log-${Date.now()}`,
@@ -355,6 +514,14 @@ export const saveAuditLog = async (action: string, details: string, currentUser:
         action,
         details,
     };
+    
+    if (source === 'firebase') {
+        if (!db) throw new Error("Firebase not initialized");
+        await setDoc(doc(db, 'auditLogs', newLog.id), newLog);
+        return newLog;
+    }
+
+    await simulateNetwork();
     
     if (source === 'database') {
         getMemoryStore().auditLogs.unshift(newLog);
@@ -370,6 +537,11 @@ export const saveAuditLog = async (action: string, details: string, currentUser:
 export const deleteAllData = async (): Promise<void> => {
     await simulateNetwork();
     const source = getDataSource();
+
+    if (source === 'firebase') {
+        console.warn("Bulk delete not implemented for Firebase client to prevent accidental data loss.");
+        return;
+    }
 
     if (source === 'database') {
         memoryStore = getFreshData();
