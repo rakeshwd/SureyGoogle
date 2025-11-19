@@ -3,7 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Question } from '../types';
 import { LIKERT_OPTIONS } from '../constants';
 
-const API_KEY = typeof process !== 'undefined' && process.env ? process.env.API_KEY : undefined;
+const envKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : undefined;
+const API_KEY = envKey || "AIzaSyArjulsQWFCBh8DkN0QZJHVweBXpJwX9Uk";
 
 if (!API_KEY) {
   console.warn("API_KEY environment variable not set. AI features will be disabled.");

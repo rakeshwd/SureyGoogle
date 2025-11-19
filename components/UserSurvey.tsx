@@ -31,8 +31,8 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
   };
   
   const handleSubmit = () => {
-    // FIX: Explicitly type the accumulator `sum` as a number and use `Number()` to safely convert the score, resolving the "+" operator error.
-    const totalScore = Object.values(answers).reduce((sum: number, score) => sum + Number(score), 0);
+    // Explicitly cast Object.values(answers) to number[] to avoid type inference issues
+    const totalScore = (Object.values(answers) as number[]).reduce((sum, score) => sum + score, 0);
     const maxScore = questionnaire.questions.reduce((sum, q) => sum + Math.max(...q.options.map(opt => opt.score)), 0);
     
     const result: SurveyResult = {
@@ -41,8 +41,8 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
         userName: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
         questionnaireId: questionnaire.id,
         questionnaireTitle: questionnaire.title,
-        // FIX: Use `Number()` to correctly cast the score value, preventing type assignment errors when score is inferred as 'unknown'.
-        answers: Object.entries(answers).map(([questionId, score]) => ({ questionId, score: Number(score) })),
+        // Explicitly cast Object.entries(answers) to ensure scores are treated as numbers
+        answers: (Object.entries(answers) as [string, number][]).map(([questionId, score]) => ({ questionId, score })),
         totalScore,
         maxScore,
         completedAt: new Date().toISOString()
