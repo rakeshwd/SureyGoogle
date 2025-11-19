@@ -46,6 +46,18 @@
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
+    
+    /* PDF Size Optimization: 
+       Remove shadows, text-shadows, and filters. 
+       These properties often force browsers to rasterize vectors into bitmaps, 
+       drastically increasing file size. 
+    */
+    * {
+      text-shadow: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+    }
+
     body * {
       visibility: hidden;
     }
@@ -58,6 +70,8 @@
       top: 0;
       width: 100%;
       height: 100%;
+      /* Ensure no overflow clipping issues */
+      overflow: visible !important;
     }
     .no-print {
       display: none !important;

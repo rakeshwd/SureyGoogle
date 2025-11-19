@@ -50,6 +50,7 @@ const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNavigateToLog
                 placeholder="Email Address"
                 className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
                 required
+                aria-label="Email Address"
               />
               <button
                 type="submit"

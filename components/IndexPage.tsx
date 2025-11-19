@@ -7,7 +7,7 @@ interface IndexPageProps {
 
 const IndexPage: React.FC<IndexPageProps> = ({ onNavigateToAuth }) => {
   return (
-    <div className="space-y-16 sm:space-y-24">
+    <div className="space-y-16 sm:space-y-24 pb-16">
       {/* Hero Section */}
       <section className="text-center pt-12 sm:pt-20">
         <h1
@@ -26,6 +26,79 @@ const IndexPage: React.FC<IndexPageProps> = ({ onNavigateToAuth }) => {
           >
             Get Started Now
           </button>
+        </div>
+      </section>
+
+      {/* Data Visualization Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 sm:p-12 border border-slate-100 dark:border-slate-700">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Data-Driven Career Growth</h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400">
+                    Employers are increasingly valuing soft skills. See how a high behavioral score translates to real-world career benefits.
+                </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-12">
+                {/* Chart 1 */}
+                <div className="flex flex-col items-center">
+                     <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-6">Interview Success Rate</h3>
+                     <div className="relative w-full max-w-xs h-64 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex items-end justify-around">
+                        {/* Axis Lines */}
+                        <div className="absolute inset-x-6 top-6 bottom-6 flex flex-col justify-between pointer-events-none opacity-20">
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                        </div>
+
+                        <div className="relative z-10 flex flex-col items-center w-1/3 group">
+                            <div className="mb-2 text-sm font-bold text-slate-500 transition-transform group-hover:-translate-y-1">28%</div>
+                            <div className="w-full bg-slate-300 dark:bg-slate-600 rounded-t-lg h-[28%] transition-all duration-500 group-hover:opacity-80"></div>
+                            <div className="mt-3 text-xs font-medium text-slate-500 text-center leading-tight">Average Candidate</div>
+                        </div>
+                        
+                        <div className="relative z-10 flex flex-col items-center w-1/3 group">
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">
+                                3x More Likely
+                            </div>
+                            <div className="mb-2 text-sm font-bold text-orange-600 dark:text-orange-400 transition-transform group-hover:-translate-y-1">84%</div>
+                            <div className="w-full bg-gradient-to-t from-orange-500 to-orange-400 rounded-t-lg h-[84%] shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"></div>
+                            <div className="mt-3 text-xs font-bold text-slate-800 dark:text-slate-200 text-center leading-tight">High Behavioral Score</div>
+                        </div>
+                     </div>
+                </div>
+
+                {/* Chart 2 */}
+                <div className="flex flex-col items-center">
+                     <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-6">Salary Potential</h3>
+                     <div className="relative w-full max-w-xs h-64 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex items-end justify-around">
+                        <div className="absolute inset-x-6 top-6 bottom-6 flex flex-col justify-between pointer-events-none opacity-20">
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                            <div className="border-t border-slate-500 w-full"></div>
+                        </div>
+
+                        <div className="relative z-10 flex flex-col items-center w-1/3 group">
+                            <div className="mb-2 text-sm font-bold text-slate-500 transition-transform group-hover:-translate-y-1">Base</div>
+                            <div className="w-full bg-slate-300 dark:bg-slate-600 rounded-t-lg h-[50%] transition-all duration-500 group-hover:opacity-80"></div>
+                            <div className="mt-3 text-xs font-medium text-slate-500 text-center leading-tight">Technical Skills Only</div>
+                        </div>
+                        
+                        <div className="relative z-10 flex flex-col items-center w-1/3 group">
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">
+                                +25% Premium
+                            </div>
+                            <div className="mb-2 text-sm font-bold text-green-600 dark:text-green-400 transition-transform group-hover:-translate-y-1">Premium</div>
+                            <div className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t-lg h-[75%] shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"></div>
+                            <div className="mt-3 text-xs font-bold text-slate-800 dark:text-slate-200 text-center leading-tight">Proven Leadership</div>
+                        </div>
+                     </div>
+                </div>
+            </div>
         </div>
       </section>
 

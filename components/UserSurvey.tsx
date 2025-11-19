@@ -63,29 +63,31 @@ const UserSurvey: React.FC<UserSurveyProps> = ({ questionnaire, onComplete, curr
             </div>
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 min-h-[6rem] flex items-center">{currentQuestion.text}</h2>
+        <div role="radiogroup" aria-labelledby="question-text">
+            <h2 id="question-text" className="text-2xl md:text-3xl font-bold mb-8 min-h-[6rem] flex items-center">{currentQuestion.text}</h2>
 
-        <div className="space-y-3">
-            {currentQuestion.options.map((option, index) => (
-                <label 
-                    key={index} 
-                    className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
-                        answers[currentQuestion.id] === option.score 
-                        ? 'bg-orange-50 border-orange-500 ring-2 ring-orange-500 dark:bg-orange-900/50 dark:border-orange-400'
-                        : 'border-slate-300 hover:border-orange-400 dark:border-slate-600 dark:hover:border-orange-500'
-                    }`}
-                >
-                    <input 
-                        type="radio"
-                        name={currentQuestion.id}
-                        value={option.score}
-                        checked={answers[currentQuestion.id] === option.score}
-                        onChange={() => handleAnswerSelect(option.score)}
-                        className="h-5 w-5 text-orange-500 focus:ring-orange-500 border-slate-300 dark:bg-slate-700 dark:border-slate-500"
-                    />
-                    <span className="ml-4 text-md text-slate-700 dark:text-slate-300">{option.text}</span>
-                </label>
-            ))}
+            <div className="space-y-3">
+                {currentQuestion.options.map((option, index) => (
+                    <label 
+                        key={index} 
+                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
+                            answers[currentQuestion.id] === option.score 
+                            ? 'bg-orange-50 border-orange-500 ring-2 ring-orange-500 dark:bg-orange-900/50 dark:border-orange-400'
+                            : 'border-slate-300 hover:border-orange-400 dark:border-slate-600 dark:hover:border-orange-500'
+                        }`}
+                    >
+                        <input 
+                            type="radio"
+                            name={currentQuestion.id}
+                            value={option.score}
+                            checked={answers[currentQuestion.id] === option.score}
+                            onChange={() => handleAnswerSelect(option.score)}
+                            className="h-5 w-5 text-orange-500 focus:ring-orange-500 border-slate-300 dark:bg-slate-700 dark:border-slate-500"
+                        />
+                        <span className="ml-4 text-md text-slate-700 dark:text-slate-300">{option.text}</span>
+                    </label>
+                ))}
+            </div>
         </div>
 
         <div className="mt-10 flex justify-between items-center">

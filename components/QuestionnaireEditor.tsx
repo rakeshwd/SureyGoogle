@@ -125,6 +125,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
               placeholder="Questionnaire Title"
               className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
               required
+              aria-label="Questionnaire Title"
             />
           </div>
 
@@ -141,12 +142,14 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                                 rows={2}
                                 required
+                                aria-label="Question Text"
                             />
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <select
                                     value={q.trait}
                                     onChange={(e) => updateQuestion(qIndex, { trait: e.target.value })}
                                     className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    aria-label="Select Trait"
                                 >
                                 {behavioralTraits.map(trait => (
                                     <option key={trait} value={trait}>{trait}</option>
@@ -158,6 +161,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                     onChange={(e) => updateQuestion(qIndex, { behavior: e.target.value })}
                                     placeholder="Specific Behavior (optional)"
                                     className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    aria-label="Specific Behavior"
                                 />
                             </div>
                             <div className="pt-2">
@@ -172,6 +176,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                                 placeholder="Option Text"
                                                 className="flex-grow px-2 py-1 border border-slate-300 rounded-md text-sm dark:bg-slate-700 dark:border-slate-600"
                                                 required
+                                                aria-label="Option Text"
                                             />
                                             <div className="flex items-center space-x-1">
                                                 <input
@@ -181,6 +186,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                                     placeholder="Score"
                                                     className="w-20 px-2 py-1 border border-slate-300 rounded-md text-sm dark:bg-slate-700 dark:border-slate-600"
                                                     required
+                                                    aria-label="Option Score"
                                                 />
                                                 <div className="relative group">
                                                     <InformationCircleIcon className="w-5 h-5 text-slate-400 cursor-help" />
@@ -189,7 +195,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                                     </span>
                                                 </div>
                                             </div>
-                                            <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="p-1 text-slate-400 hover:text-red-500" title="Remove this option">
+                                            <button type="button" onClick={() => removeOption(qIndex, optIndex)} className="p-1 text-slate-400 hover:text-red-500" title="Remove this option" aria-label="Remove option">
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -200,7 +206,7 @@ const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({ questionnaire
                                 </button>
                             </div>
                         </div>
-                        <button type="button" onClick={() => removeQuestion(qIndex)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Remove this question">
+                        <button type="button" onClick={() => removeQuestion(qIndex)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Remove this question" aria-label="Remove question">
                             <TrashIcon className="w-5 h-5"/>
                         </button>
                     </div>

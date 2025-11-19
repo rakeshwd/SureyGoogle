@@ -207,6 +207,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 placeholder="recruiter@example.com"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
                 required
+                aria-label="Recruiter Email"
               />
               <div className="flex justify-end space-x-3">
                  <button
@@ -341,7 +342,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
           <h2 className="text-2xl font-bold">Questionnaires</h2>
           <div className="flex items-center space-x-2">
-            <input type="file" ref={importInputRef} onChange={handleImport} accept=".json" className="hidden" />
+            <input type="file" ref={importInputRef} onChange={handleImport} accept=".json" className="hidden" aria-label="Import questionnaire" />
             <button
               onClick={handleImportClick}
               title="Import a questionnaire from a JSON file"
@@ -368,13 +369,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{q.questions.length} questions</p>
               </div>
               <div className="mt-6 flex justify-end space-x-3">
-                <button onClick={() => handleExport(q)} className="p-2 text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-colors" title="Export Questionnaire as JSON">
+                <button onClick={() => handleExport(q)} className="p-2 text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-colors" title="Export Questionnaire as JSON" aria-label="Export questionnaire">
                   <DownloadIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleEdit(q)} className="p-2 text-slate-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors" title="Edit Questionnaire">
+                <button onClick={() => handleEdit(q)} className="p-2 text-slate-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors" title="Edit Questionnaire" aria-label="Edit questionnaire">
                   <PencilIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleDeleteQuestionnaireClick(q.id)} className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete Questionnaire">
+                <button onClick={() => handleDeleteQuestionnaireClick(q.id)} className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete Questionnaire" aria-label="Delete questionnaire">
                   <TrashIcon className="w-5 h-5" />
                 </button>
               </div>
@@ -441,6 +442,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         onChange={(e) => handleRoleChange(user.id, e.target.value as User['role'])}
                         disabled={user.id === currentUser.id}
                         className="w-full px-2 py-1 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Select role"
                       >
                         {USER_ROLES.map(role => (
                           <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</option>
@@ -453,6 +455,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         disabled={user.id === currentUser.id}
                         className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
                         title={user.id === currentUser.id ? "Cannot delete yourself" : "Delete User Account"}
+                        aria-label="Delete User Account"
                       >
                         <TrashIcon className="w-5 h-5" />
                       </button>

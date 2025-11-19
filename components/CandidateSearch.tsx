@@ -82,6 +82,7 @@ const CandidateSearch: React.FC<CandidateSearchProps> = ({ results, questionnair
             <input
               type="text" placeholder="Search by candidate name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
+              aria-label="Search candidates"
             />
         </div>
         

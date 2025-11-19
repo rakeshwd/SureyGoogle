@@ -329,7 +329,12 @@ const App: React.FC = () => {
                 </span>
             </div>
             {currentUser && (
-                 <button onClick={handleLogout} title="Logout" className="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600">
+                 <button 
+                    onClick={handleLogout} 
+                    title="Logout" 
+                    aria-label="Logout"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
+                >
                     <LogoutIcon className="h-5 w-5" />
                     <span>Logout</span>
                 </button>

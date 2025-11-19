@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Questionnaire, SurveyResult, CertificateTemplate } from '../types';
-import { BriefcaseIcon, ScaleIcon, SearchIcon, XIcon } from './icons';
+import { BriefcaseIcon, ScaleIcon, SearchIcon, XIcon, FilterIcon } from './icons';
 import CandidateComparison from './CandidateComparison';
 import SurveyCertificate from './SurveyCertificate';
 
@@ -35,6 +36,14 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
     const [selectedResultIds, setSelectedResultIds] = useState<Set<string>>(new Set());
     const [isComparisonModalOpen, setIsComparisonModalOpen] = useState(false);
     const [viewingCertificate, setViewingCertificate] = useState<SurveyResult | null>(null);
+    
+    // Filters for Candidate Hub
+    const [hubQuestionnaireFilter, setHubQuestionnaireFilter] = useState<string>('all');
+    const [minScore, setMinScore] = useState<number | ''>('');
+    const [maxScore, setMaxScore] = useState<number | ''>('');
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+    const [showFilters, setShowFilters] = useState(false);
 
     const certificateModalRef = useRef<HTMLDivElement>(null);
     const [certificateScale, setCertificateScale] = useState(1);
@@ -87,10 +96,35 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
     }, [selectedQuestionnaireId, results, questionnaires]);
 
     const filteredResults = useMemo(() => {
-        return results.filter(result =>
-            result.userName.toLowerCase().includes(searchTerm.toLowerCase())
-        ).sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
-    }, [results, searchTerm]);
+        return results.filter(result => {
+            const matchesSearch = result.userName.toLowerCase().includes(searchTerm.toLowerCase());
+
+            const matchesQuestionnaire = hubQuestionnaireFilter === 'all' || result.questionnaireId === hubQuestionnaireFilter;
+
+            const percentage = Math.round((result.totalScore / result.maxScore) * 100);
+            const matchesMinScore = minScore === '' || percentage >= minScore;
+            const matchesMaxScore = maxScore === '' || percentage <= maxScore;
+
+            const resultDate = new Date(result.completedAt);
+            let matchesStartDate = true;
+            if (startDate) {
+                const start = new Date(startDate);
+                // Start of the selected day
+                start.setHours(0, 0, 0, 0);
+                matchesStartDate = resultDate >= start;
+            }
+            
+            let matchesEndDate = true;
+            if (endDate) {
+                const end = new Date(endDate);
+                // End of the selected day
+                end.setHours(23, 59, 59, 999); 
+                matchesEndDate = resultDate <= end;
+            }
+
+            return matchesSearch && matchesQuestionnaire && matchesMinScore && matchesMaxScore && matchesStartDate && matchesEndDate;
+        }).sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+    }, [results, searchTerm, hubQuestionnaireFilter, minScore, maxScore, startDate, endDate]);
 
     const handleSelectResult = (resultId: string) => {
         setSelectedResultIds(prev => {
@@ -186,15 +220,94 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                         Compare Selected ({selectedResultIds.size})
                     </button>
                 </div>
-                <div className="relative mb-6">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <SearchIcon className="h-5 w-5 text-slate-400" />
+                
+                <div className="flex gap-2 mb-6">
+                    <div className="relative flex-grow">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <SearchIcon className="h-5 w-5 text-slate-400" />
+                        </div>
+                        <input
+                            type="text" placeholder="Search by candidate name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
+                            aria-label="Search candidates"
+                        />
                     </div>
-                    <input
-                        type="text" placeholder="Search by candidate name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
-                    />
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium ${showFilters ? 'bg-orange-50 text-orange-700 border-orange-500 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-white text-slate-700 dark:bg-slate-700 dark:text-slate-200'} hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors`}
+                    >
+                        <FilterIcon className="h-5 w-5 mr-2" />
+                        Filters
+                    </button>
                 </div>
+
+                {showFilters && (
+                    <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-lg border border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-4 animate-slide-in">
+                        {/* Questionnaire Filter */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Questionnaire</label>
+                            <select
+                                value={hubQuestionnaireFilter}
+                                onChange={(e) => setHubQuestionnaireFilter(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                aria-label="Filter by questionnaire"
+                            >
+                                <option value="all">All Questionnaires</option>
+                                {questionnaires.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Score Range */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Score Range (%)</label>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    placeholder="Min"
+                                    value={minScore}
+                                    onChange={(e) => setMinScore(e.target.value === '' ? '' : Number(e.target.value))}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    aria-label="Minimum score"
+                                />
+                                <span className="text-slate-500">-</span>
+                                 <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    placeholder="Max"
+                                    value={maxScore}
+                                    onChange={(e) => setMaxScore(e.target.value === '' ? '' : Number(e.target.value))}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    aria-label="Maximum score"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Date Range */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Completion Date</label>
+                             <div className="flex items-center space-x-2">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    aria-label="Start date"
+                                />
+                                <span className="text-slate-500">-</span>
+                                 <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600"
+                                    aria-label="End date"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredResults.map(result => (
@@ -209,6 +322,7 @@ const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ questionnaires,
                                     checked={selectedResultIds.has(result.id)}
                                     onChange={() => handleSelectResult(result.id)}
                                     className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 rounded dark:bg-slate-900 dark:border-slate-600 ml-2"
+                                    aria-label={`Select candidate ${result.userName}`}
                                 />
                             </div>
                              <div className="mt-4" onClick={() => setViewingCertificate(result)}>

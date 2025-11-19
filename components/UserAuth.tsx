@@ -51,6 +51,7 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
             placeholder="First Name"
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
             required
+            aria-label="First Name"
           />
           <input
             name="middleName"
@@ -59,6 +60,7 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
             onChange={handleChange}
             placeholder="Middle Name (Optional)"
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
+            aria-label="Middle Name"
           />
           <input
             name="lastName"
@@ -68,6 +70,7 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
             placeholder="Last Name"
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
             required
+            aria-label="Last Name"
           />
           <input
             name="email"
@@ -77,6 +80,7 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
             placeholder="Email Address"
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
             required
+            aria-label="Email Address"
           />
           <input
             name="password"
@@ -86,6 +90,7 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
             placeholder="Password"
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
             required
+            aria-label="Password"
           />
           <input
             name="confirmPassword"
@@ -95,6 +100,7 @@ const UserAuth: React.FC<UserAuthProps> = ({ onRegister, onNavigateToLogin }) =>
             placeholder="Confirm Password"
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:border-slate-600"
             required
+            aria-label="Confirm Password"
           />
           <button
             type="submit"

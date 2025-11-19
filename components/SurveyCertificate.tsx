@@ -75,7 +75,7 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
     <div className="max-w-5xl mx-auto flex flex-col items-center">
         {/* Certificate Component */}
         <div 
-            className="printable-area w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl flex font-serif relative overflow-hidden" 
+            className="printable-area w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl print:shadow-none print:border print:border-slate-300 flex font-serif relative overflow-hidden" 
             style={{ fontFamily: "'Lato', sans-serif" }}
         >
             {/* Watermark */}

@@ -94,12 +94,12 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
                         )}
                     </div>
                     <div className="flex items-center space-x-2">
-                        <input type="file" accept="image/*" ref={ref} onChange={(e) => handleFileChange(e, type)} className="hidden" />
+                        <input type="file" accept="image/*" ref={ref} onChange={(e) => handleFileChange(e, type)} className="hidden" aria-label={`Upload ${label.toLowerCase()}`} />
                         <button type="button" onClick={() => ref.current?.click()} className="px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 dark:bg-slate-600 dark:text-slate-200 dark:border-slate-500 dark:hover:bg-slate-500">
                             Change
                         </button>
                         {url && (
-                             <button type="button" onClick={() => handleRemoveImage(type)} className="p-2 text-slate-500 hover:text-red-600" title={`Remove ${label}`}>
+                             <button type="button" onClick={() => handleRemoveImage(type)} className="p-2 text-slate-500 hover:text-red-600" title={`Remove ${label}`} aria-label={`Remove ${label}`}>
                                 <TrashIcon className="w-4 h-4" />
                             </button>
                         )}
