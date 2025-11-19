@@ -1,6 +1,7 @@
+
 import React, { useState, useRef } from 'react';
 import { CertificateTemplate, SurveyResult, Questionnaire } from '../types';
-import { ImageIcon, SignatureIcon, TrashIcon } from './icons';
+import { ImageIcon, TrashIcon } from './icons';
 import SurveyCertificate from './SurveyCertificate';
 
 interface CertificateTemplateEditorProps {
@@ -36,11 +37,48 @@ const previewResult: SurveyResult = {
     completedAt: new Date().toISOString(),
 };
 
+const resizeImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 300; // Max width for logo optimization
+                const MAX_HEIGHT = 300;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0, width, height);
+                // Optimize: JPEG 0.7 quality
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.onerror = reject;
+            img.src = event.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+};
 
 const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ template, onSave }) => {
     const [editedTemplate, setEditedTemplate] = useState<CertificateTemplate>(template);
     const logoInputRef = useRef<HTMLInputElement>(null);
-    const signatureInputRef = useRef<HTMLInputElement>(null);
 
     const handleToggle = (key: keyof CertificateTemplate) => {
         setEditedTemplate(prev => ({ ...prev, [key]: !prev[key] }));
@@ -50,24 +88,26 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
         setEditedTemplate(prev => ({ ...prev, customMessage: e.target.value }));
     };
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'signature') => {
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
+            try {
+                const resizedImage = await resizeImage(file);
                 setEditedTemplate(prev => ({
                     ...prev,
-                    [type === 'logo' ? 'logoUrl' : 'signatureUrl']: reader.result as string
+                    logoUrl: resizedImage
                 }));
-            };
-            reader.readAsDataURL(file);
+            } catch (e) {
+                console.error("Error processing image", e);
+                alert("Failed to process image. Please try another file.");
+            }
         }
     };
 
-    const handleRemoveImage = (type: 'logo' | 'signature') => {
+    const handleRemoveImage = () => {
         setEditedTemplate(prev => ({
             ...prev,
-            [type === 'logo' ? 'logoUrl' : 'signatureUrl']: null
+            logoUrl: null
         }));
     }
 
@@ -75,39 +115,6 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
         e.preventDefault();
         onSave(editedTemplate);
     };
-
-    const ImageUpload: React.FC<{ type: 'logo' | 'signature' }> = ({ type }) => {
-        const url = type === 'logo' ? editedTemplate.logoUrl : editedTemplate.signatureUrl;
-        const ref = type === 'logo' ? logoInputRef : signatureInputRef;
-        const Icon = type === 'logo' ? ImageIcon : SignatureIcon;
-        const label = type === 'logo' ? 'Company Logo' : 'Signature';
-
-        return (
-            <div>
-                <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
-                <div className="mt-1 flex items-center space-x-4">
-                    <div className="flex-shrink-0 h-16 w-32 bg-slate-100 dark:bg-slate-700 rounded-md flex items-center justify-center">
-                        {url ? (
-                            <img src={url} alt={label} className={`max-h-14 ${type === 'logo' ? 'w-auto' : 'w-28'}`} />
-                        ) : (
-                            <Icon className="h-8 w-8 text-slate-400" />
-                        )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <input type="file" accept="image/*" ref={ref} onChange={(e) => handleFileChange(e, type)} className="hidden" aria-label={`Upload ${label.toLowerCase()}`} />
-                        <button type="button" onClick={() => ref.current?.click()} className="px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 dark:bg-slate-600 dark:text-slate-200 dark:border-slate-500 dark:hover:bg-slate-500">
-                            Change
-                        </button>
-                        {url && (
-                             <button type="button" onClick={() => handleRemoveImage(type)} className="p-2 text-slate-500 hover:text-red-600" title={`Remove ${label}`} aria-label={`Remove ${label}`}>
-                                <TrashIcon className="w-4 h-4" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-12 items-start">
@@ -120,7 +127,6 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
                             { key: 'showLogo', label: 'Show Company Logo' },
                             { key: 'showOverallScore', label: 'Show Overall Score' },
                             { key: 'showTraitScores', label: 'Show Trait Scores Breakdown' },
-                            { key: 'showSignature', label: 'Show Signature' },
                             { key: 'showWatermark', label: 'Show Watermark' },
                         ] as { key: keyof CertificateTemplate, label: string }[]).map(({ key, label }) => (
                             <div key={key} className="relative flex items-start">
@@ -142,8 +148,30 @@ const CertificateTemplateEditor: React.FC<CertificateTemplateEditorProps> = ({ t
                     </fieldset>
 
                     <div className="space-y-4">
-                       <ImageUpload type="logo" />
-                       <ImageUpload type="signature" />
+                        <div>
+                            <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">Company Logo</span>
+                            <div className="mt-1 flex items-center space-x-4">
+                                <div className="flex-shrink-0 h-16 w-32 bg-slate-100 dark:bg-slate-700 rounded-md flex items-center justify-center">
+                                    {editedTemplate.logoUrl ? (
+                                        <img src={editedTemplate.logoUrl} alt="Company Logo" className="max-h-14 w-auto" />
+                                    ) : (
+                                        <ImageIcon className="h-8 w-8 text-slate-400" />
+                                    )}
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <input type="file" accept="image/*" ref={logoInputRef} onChange={handleFileChange} className="hidden" aria-label="Upload logo" />
+                                    <button type="button" onClick={() => logoInputRef.current?.click()} className="px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 dark:bg-slate-600 dark:text-slate-200 dark:border-slate-500 dark:hover:bg-slate-500">
+                                        Change
+                                    </button>
+                                    {editedTemplate.logoUrl && (
+                                        <button type="button" onClick={handleRemoveImage} className="p-2 text-slate-500 hover:text-red-600" title="Remove logo" aria-label="Remove logo">
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                            <p className="mt-2 text-xs text-slate-500">Images will be resized to max 300x300px for optimization.</p>
+                        </div>
                     </div>
                 </div>
                 

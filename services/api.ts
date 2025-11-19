@@ -1,6 +1,7 @@
+
 import { Questionnaire, SurveyResult, User, CertificateTemplate, AuditLog, AppSettings, DataSource } from '../types';
 import { sampleQuestionnaires, sampleResults, sampleUsers } from '../constants';
-import { defaultLogo, defaultSignature } from '../assets/defaults';
+import { defaultLogo } from '../assets/defaults';
 
 // --- Helper Functions ---
 const SIMULATED_DELAY = 250; // ms
@@ -27,10 +28,8 @@ const getFreshData = () => ({
         showOverallScore: true,
         showTraitScores: true,
         showLogo: true,
-        showSignature: true,
         customMessage: "Congratulations on your achievement! This certificate reflects your dedication and developing strengths.",
         logoUrl: defaultLogo,
-        signatureUrl: defaultSignature,
         showWatermark: false,
         watermarkText: null,
     },

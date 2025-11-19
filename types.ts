@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   firstName: string;
@@ -42,10 +43,8 @@ export interface CertificateTemplate {
   showOverallScore: boolean;
   showTraitScores: boolean;
   showLogo: boolean;
-  showSignature: boolean;
   customMessage: string;
   logoUrl: string | null;
-  signatureUrl: string | null;
   showWatermark: boolean;
   watermarkText: string | null;
 }

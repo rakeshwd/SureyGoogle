@@ -1,6 +1,7 @@
+
 import React, { useMemo } from 'react';
 import { SurveyResult, CertificateTemplate, Questionnaire } from '../types';
-import { LinkedInIcon, TwitterIcon, ImageIcon, SignatureIcon, DownloadIcon } from './icons';
+import { LinkedInIcon, TwitterIcon, ImageIcon, DownloadIcon } from './icons';
 
 const TraitScoreBar: React.FC<{ trait: string; percentage: number }> = ({ trait, percentage }) => {
     return (
@@ -111,17 +112,6 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
                     )}
                 </div>
                 <div>
-                     {template.showSignature && (
-                         <div className="mt-10">
-                            {template.signatureUrl ? (
-                                <img src={template.signatureUrl} alt="Signature" className="h-12 w-auto" />
-                            ) : (
-                                <SignatureIcon className="h-12 w-24 text-slate-600 dark:text-slate-400" />
-                            )}
-                            <div className="w-48 h-px bg-slate-400 dark:bg-slate-600 mt-1"></div>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Authorized Signature</p>
-                        </div>
-                    )}
                     <p className="text-xs text-slate-400 mt-4">
                         Issued on: {new Date(result.completedAt).toLocaleDateString()}
                     </p>
