@@ -1,9 +1,10 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Questionnaire, SurveyResult, User, CertificateTemplate } from '../types';
 import UserSurvey from './UserSurvey';
 import SurveyCertificate from './SurveyCertificate';
-import { BriefcaseIcon, CheckCircleIcon, LinkedInIcon, TwitterIcon, DownloadIcon } from './icons';
+import { BriefcaseIcon, CheckCircleIcon, LinkedInIcon, TwitterIcon, DownloadIcon, ShareIcon } from './icons';
 
 interface UserDashboardProps {
   currentUser: User;
@@ -54,6 +55,21 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
       window.print();
   };
 
+  const handleNativeShare = async () => {
+    if (viewingCertificate && navigator.share) {
+         const percentageScore = Math.round((viewingCertificate.totalScore / viewingCertificate.maxScore) * 100);
+         try {
+            await navigator.share({
+                title: 'My USCORE Assessment Result',
+                text: `I just scored ${percentageScore}% on the ${viewingCertificate.questionnaireTitle} assessment! Check out USCORE to verify your behavioral skills.`,
+                url: window.location.origin,
+            });
+        } catch (err) {
+            console.error('Error sharing:', err);
+        }
+    }
+  };
+
   // Certificate Scaling Logic
   const certificateContainerRef = useRef<HTMLDivElement>(null);
   const [certificateScale, setCertificateScale] = useState(1);
@@ -97,6 +113,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
     const shareText = `I just scored ${percentageScore}% on the ${viewingCertificate.questionnaireTitle} assessment! Check out USCORE to verify your behavioral skills.`;
     const linkedInShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent('My USCORE Assessment Result')}&summary=${encodeURIComponent(shareText)}`;
     const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent(shareText)}`;
+    const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
     return (
         <div className="flex flex-col items-center">
@@ -127,7 +144,16 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
                     </p>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className={`grid grid-cols-1 sm:grid-cols-2 ${canShare ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4`}>
+                    {canShare && (
+                        <button
+                            onClick={handleNativeShare}
+                            className="flex items-center justify-center px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-transform transform hover:scale-105 font-semibold shadow-md"
+                        >
+                            <ShareIcon className="w-6 h-6 mr-2" />
+                            Share
+                        </button>
+                    )}
                     <button
                         onClick={() => handleShare(linkedInShareUrl)}
                         className="flex items-center justify-center px-4 py-3 bg-[#0077B5] hover:bg-[#005582] text-white rounded-lg transition-transform transform hover:scale-105 font-semibold shadow-md"
