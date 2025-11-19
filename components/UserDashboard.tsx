@@ -132,9 +132,28 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, questionnair
 
     return (
         <div className="flex flex-col items-center">
+             {/* Add styles to reset transform during print to ensure full-size PDF generation */}
+            <style>{`
+                @media print {
+                    .certificate-print-wrapper {
+                        transform: none !important;
+                        margin: 0 !important;
+                        width: auto !important;
+                        height: auto !important;
+                    }
+                    /* Ensure the outer container doesn't restrict the width in print mode */
+                    .certificate-outer-container {
+                        width: auto !important;
+                        max-width: none !important;
+                        box-shadow: none !important;
+                        overflow: visible !important;
+                    }
+                }
+            `}</style>
+
             {/* Constrain container to tablet size (max-w-3xl) to trigger scaling */}
-            <div ref={certificateContainerRef} className="w-full max-w-3xl overflow-hidden flex justify-center shadow-2xl rounded-lg">
-                 <div style={{ 
+            <div ref={certificateContainerRef} className="certificate-outer-container w-full max-w-3xl overflow-hidden flex justify-center shadow-2xl rounded-lg">
+                 <div className="certificate-print-wrapper" style={{ 
                      transform: `scale(${certificateScale})`, 
                      transformOrigin: 'top center', 
                      width: '1024px', 
