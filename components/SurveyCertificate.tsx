@@ -7,12 +7,12 @@ const TraitScoreBar: React.FC<{ trait: string; percentage: number }> = ({ trait,
     return (
         <div>
             <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">{trait}</span>
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{percentage}%</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 print:text-slate-600">{trait}</span>
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 print:text-slate-800">{percentage}%</span>
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 print:bg-slate-200">
                 <div 
-                    className="bg-orange-500 h-1.5 rounded-full" 
+                    className="bg-orange-500 h-1.5 rounded-full print:bg-orange-500" 
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
@@ -76,15 +76,14 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
     <div className="max-w-5xl mx-auto flex flex-col items-center">
         {/* Certificate Component */}
         <div 
-            className="printable-area w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl print:shadow-none print:border print:border-slate-300 flex font-serif relative overflow-hidden" 
+            className="printable-area w-[1024px] h-[722px] bg-white dark:bg-slate-800 shadow-2xl print:shadow-none print:border print:border-slate-300 flex font-serif relative overflow-hidden print:bg-white" 
             style={{ fontFamily: "'Lato', sans-serif" }}
         >
             {/* Watermark */}
             {template.showWatermark && template.watermarkText && (
                 <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
                     <p 
-                        className="text-8xl font-black uppercase text-slate-200/50 dark:text-slate-700/50 transform -rotate-45 select-none"
-                        style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.1)' }}
+                        className="text-8xl font-black uppercase text-slate-100 dark:text-slate-800 transform -rotate-45 select-none print:text-slate-100"
                     >
                         {template.watermarkText}
                     </p>
@@ -92,27 +91,27 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
             )}
 
             {/* Decorative Side Panel */}
-            <div className="w-[340px] bg-slate-50 dark:bg-slate-900 p-8 flex flex-col justify-between relative z-10">
+            <div className="w-[340px] bg-slate-50 dark:bg-slate-900 print:bg-slate-50 p-8 flex flex-col justify-between relative z-10">
                 <div>
                     {template.showLogo && (
                         <div className="mb-6">
                             {template.logoUrl ? (
                                 <img src={template.logoUrl} alt="Company Logo" className="h-40 w-auto" />
                             ) : (
-                                <div className="w-40 h-40 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                <div className="w-40 h-40 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center print:bg-slate-200">
                                     <ImageIcon className="w-20 h-20 text-slate-500" />
                                 </div>
                             )}
                         </div>
                     )}
-                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200" style={{fontFamily: "'Playfair Display', serif"}}>Certificate of</h1>
-                    <h2 className="text-5xl font-bold text-orange-500 dark:text-orange-400" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
+                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200 print:text-slate-800" style={{fontFamily: "'Playfair Display', serif"}}>Certificate of</h1>
+                    <h2 className="text-5xl font-bold text-orange-500 dark:text-orange-400 print:text-orange-500" style={{fontFamily: "'Playfair Display', serif"}}>Achievement</h2>
                     {template.customMessage && (
-                        <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 italic">"{template.customMessage}"</p>
+                        <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 italic print:text-slate-600">"{template.customMessage}"</p>
                     )}
                 </div>
                 <div>
-                    <p className="text-xs text-slate-400 mt-4">
+                    <p className="text-xs text-slate-400 mt-4 print:text-slate-400">
                         Issued on: {new Date(result.completedAt).toLocaleDateString()}
                     </p>
                 </div>
@@ -120,21 +119,21 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
 
             {/* Main Content Panel */}
             <div className="flex-1 p-12 flex flex-col justify-center relative z-10">
-                <p className="text-md uppercase tracking-widest text-slate-500 dark:text-slate-400">This certifies that</p>
-                <p className="mt-2 text-5xl font-bold text-slate-800 dark:text-slate-100" style={{fontFamily: "'Playfair Display', serif"}}>{result.userName}</p>
-                <p className="mt-4 text-md text-slate-500 dark:text-slate-400">has successfully completed the assessment for</p>
-                <p className="mt-1 text-2xl font-semibold text-slate-700 dark:text-slate-200">{result.questionnaireTitle}</p>
+                <p className="text-md uppercase tracking-widest text-slate-500 dark:text-slate-400 print:text-slate-500">This certifies that</p>
+                <p className="mt-2 text-5xl font-bold text-slate-800 dark:text-slate-100 print:text-slate-800" style={{fontFamily: "'Playfair Display', serif"}}>{result.userName}</p>
+                <p className="mt-4 text-md text-slate-500 dark:text-slate-400 print:text-slate-500">has successfully completed the assessment for</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-700 dark:text-slate-200 print:text-slate-700">{result.questionnaireTitle}</p>
                 
                 <div className="mt-10 w-full flex items-center space-x-12">
                      {template.showOverallScore && (
                         <div className="text-center">
-                            <p className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400">Overall Score</p>
-                            <p className="text-7xl font-bold text-slate-900 dark:text-white mt-1">{percentageScore}<span className="text-4xl">%</span></p>
+                            <p className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 print:text-slate-500">Overall Score</p>
+                            <p className="text-7xl font-bold text-slate-900 dark:text-white mt-1 print:text-slate-900">{percentageScore}<span className="text-4xl">%</span></p>
                         </div>
                     )}
                      {template.showTraitScores && (
                         <div className="flex-1">
-                             <h3 className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Trait Breakdown</h3>
+                             <h3 className="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 print:text-slate-500">Trait Breakdown</h3>
                              <div className="space-y-3">
                                 {traitScores.map(({ trait, percentage }) => (
                                     <TraitScoreBar key={trait} trait={trait} percentage={percentage} />
@@ -143,7 +142,7 @@ const SurveyCertificate: React.FC<SurveyCertificateProps> = ({ result, questionn
                         </div>
                     )}
                 </div>
-                 <p className="text-xs text-slate-400 mt-auto text-right">Certificate ID: {result.id}</p>
+                 <p className="text-xs text-slate-400 mt-auto text-right print:text-slate-400">Certificate ID: {result.id}</p>
             </div>
             
              {/* Decorative watermark/seal */}
